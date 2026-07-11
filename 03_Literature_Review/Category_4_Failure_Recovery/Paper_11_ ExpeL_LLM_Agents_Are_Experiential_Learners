@@ -1,0 +1,164 @@
+# Paper 11: ExpeL – LLM Agents Are Experiential Learners
+
+## Authors
+Andrew Zhao, Daniel Huang, Quentin Xu, Matthieu Lin, Yong-Jin Liu, Gao Huang
+
+## Conference
+AAAI 2024
+
+## Category
+Category 3 – Failure Recovery, Self-Reflection & Agent Memory
+
+---
+
+# 1. What problem does this paper solve?
+
+Most LLM agents solve each task independently.
+
+After finishing one task, they forget everything they learned.
+
+Even if they fail, they cannot use that experience to improve future tasks.
+
+Current approaches like ReAct and Reflexion mainly improve performance within the same task but do not preserve knowledge across multiple tasks.
+
+The paper proposes ExpeL, an agent that learns from previous experiences without modifying the LLM itself.
+
+---
+
+# 2. What methodology is used?
+
+The ExpeL framework works in three stages:
+
+### Stage 1 – Experience Collection
+
+The agent solves many training tasks.
+
+For every task it stores:
+
+- Successful trajectories
+- Failed trajectories
+- Self-reflections
+
+These experiences are saved inside an Experience Pool.
+
+---
+
+### Stage 2 – Insight Extraction
+
+Instead of storing only raw experiences, the agent extracts general rules.
+
+Examples:
+
+- Break complex tasks into smaller parts.
+- Reassess failed actions.
+- Search relevant information before acting.
+- Consider previous successful strategies.
+
+The framework continuously updates these rules using:
+
+- ADD
+- EDIT
+- UPVOTE
+- DOWNVOTE
+
+This keeps only useful insights.
+
+---
+
+### Stage 3 – Task Inference
+
+When solving a new task, the agent:
+
+- Retrieves similar successful experiences.
+- Uses extracted insights.
+- Combines both with ReAct reasoning.
+
+Instead of starting from zero, it uses previous knowledge.
+
+---
+
+# 3. What results are achieved?
+
+Major Findings:
+
+- ExpeL consistently outperformed ReAct across multiple benchmarks.
+- Performance improved as more experiences were collected.
+- Combining memory retrieval with insight extraction performed better than using either alone.
+- Transfer learning was successful across different tasks.
+- Self-generated experiences improved future reasoning without retraining the LLM.
+- ExpeL achieved better recovery and planning while requiring no parameter updates.
+
+---
+
+# 4. What are the limitations?
+
+- Focuses mainly on text-based environments.
+- Does not evaluate real-world software engineering repositories.
+- No direct evaluation on autonomous coding agents.
+- Memory size can become large over time.
+- Long-term lifelong learning still requires better memory management.
+- Uses retrieval instead of dynamically updating the model parameters.
+
+---
+
+# 5. How is my research different?
+
+ExpeL teaches agents to learn from previous experiences across tasks.
+
+However, it is a general-purpose framework.
+
+My research focuses specifically on Agentic AI Coding Systems.
+
+Instead of only storing experiences, my framework introduces a dedicated Failure Recovery Pipeline:
+
+- Failure Detection
+- Failure Analysis
+- Self-Reflection
+- Repair Generation
+- Retry Execution
+- Continuous Recovery
+
+The evaluation will be performed on software engineering tasks rather than QA or benchmark environments.
+
+My work studies recovery success, repair efficiency, execution cost, and recovery time in autonomous coding agents.
+
+---
+
+# Key Contribution
+
+ExpeL introduces an experience-driven learning framework where LLM agents improve by remembering previous successes and failures instead of updating model parameters.
+
+It combines:
+
+- Experience Memory
+- Self-Reflection
+- Knowledge Extraction
+- Similar Experience Retrieval
+
+to improve future task performance.
+
+---
+
+# Why this paper is important for my dissertation
+
+✅ Introduces long-term experience memory.
+
+✅ Demonstrates cross-task learning.
+
+✅ Shows practical use of self-reflection.
+
+✅ Supports autonomous failure recovery.
+
+✅ Provides strong motivation for memory-based coding agents.
+
+✅ Directly related to my Self-Reflection-Based Failure Recovery Framework.
+
+---
+
+# Citation
+
+Zhao, A., Huang, D., Xu, Q., Lin, M., Liu, Y., & Huang, G. (2024).
+
+ExpeL: LLM Agents Are Experiential Learners.
+
+Proceedings of the AAAI Conference on Artificial Intelligence (AAAI 2024).

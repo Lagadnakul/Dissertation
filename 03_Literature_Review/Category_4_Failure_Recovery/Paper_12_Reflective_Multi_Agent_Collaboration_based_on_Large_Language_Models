@@ -1,0 +1,237 @@
+# Paper 12: Reflective Multi-Agent Collaboration based on Large Language Models (COPPER)
+
+## Authors
+
+Xiaohe Bo, Zeyu Zhang, Quanyu Dai, Xueyang Feng, Lei Wang, Rui Li, Xu Chen, Ji-Rong Wen
+
+## Conference
+
+NeurIPS 2024
+
+## Category
+
+Category 3 – Multi-Agent Systems, Self-Reflection & Failure Recovery
+
+---
+
+# 1. What problem does this paper solve?
+
+Most existing multi-agent LLM systems rely only on collaboration between agents.
+
+Although multiple agents work together, they usually cannot learn from previous failures.
+
+Reflection methods such as Reflexion improve a single agent, but extending reflection to multiple agents introduces two major problems:
+
+- Which agent actually contributed to the improvement?
+- Training one reflector for every agent becomes computationally expensive.
+
+The paper proposes **COPPER**, a reflective multi-agent framework that allows multiple agents to collaboratively learn from failures using a shared reflection mechanism.
+
+---
+
+# 2. What methodology is used?
+
+The proposed framework is called:
+
+**COPPER (COunterfactual PPO Enhanced Shared Reflector)**
+
+The workflow consists of six major steps.
+
+### Step 1 – Multi-Agent Collaboration
+
+Multiple agents work together.
+
+Each agent has:
+
+- A specific role
+- Short-term memory
+- Long-term memory
+- Shared message pool
+
+Agents communicate while solving the task.
+
+---
+
+### Step 2 – Reflection Generation
+
+After completing a task,
+
+each agent analyzes:
+
+- Previous trajectory
+- Environment reward
+- Other agents' actions
+
+The reflector generates personalized self-reflections.
+
+---
+
+### Step 3 – Shared Reflector
+
+Instead of training one reflector per agent,
+
+COPPER trains only **one shared reflector**.
+
+This reflector generates different reflections according to each agent's role.
+
+Benefits:
+
+- Less computation
+- Better scalability
+- More stable training
+
+---
+
+### Step 4 – Counterfactual Reward
+
+One major challenge is:
+
+Which agent actually helped?
+
+The paper solves this using **Counterfactual Rewards**.
+
+For each agent,
+
+the framework removes only that agent's reflection and reruns the task.
+
+If performance drops,
+
+that reflection was important.
+
+This estimates each agent's actual contribution.
+
+---
+
+### Step 5 – PPO Training
+
+The shared reflector is trained using:
+
+- Supervised Fine-Tuning (SFT)
+- Reward Model
+- Counterfactual PPO (RLHF)
+
+The reflector gradually learns to generate better reflections.
+
+---
+
+### Step 6 – Improved Collaboration
+
+Future tasks use:
+
+- Previous reflections
+- Long-term memory
+- Better collaboration
+
+leading to continuous performance improvement.
+
+---
+
+# 3. What results are achieved?
+
+COPPER was evaluated on:
+
+- HotPotQA
+- GSM8K
+- Checkmate in One Move
+
+Main results:
+
+- Better than ReAct
+- Better than Reflexion
+- Better than Retroformer
+- Better collaboration among agents
+- Strong generalization across GPT-3.5 and GPT-4 actors
+- Shared reflector reduced computational cost while improving performance.
+
+Reported improvements:
+
+- HotPotQA → +31.8%
+- GSM8K → +18.5%
+- Checkmate in One Move → +86.4%
+
+---
+
+# 4. What are the limitations?
+
+- Counterfactual reward computation is expensive because multiple runs are required.
+- Additional training data is needed.
+- Uses a limited sliding-window memory.
+- Does not use advanced memory structures like vector databases.
+- Mainly evaluated on QA, math, and chess—not real software engineering repositories.
+- Real-world coding environments remain unexplored.
+
+---
+
+# 5. How is my research different?
+
+COPPER improves collaboration between multiple LLM agents using self-reflection.
+
+However,
+
+it is a general multi-agent framework.
+
+My dissertation focuses specifically on:
+
+**Agentic AI Coding Systems**
+
+instead of general multi-agent tasks.
+
+My proposed framework introduces a dedicated coding failure recovery pipeline:
+
+- Failure Detection
+- Failure Classification
+- Self-Reflection
+- Repair Generation
+- Retry Execution
+- Recovery Evaluation
+
+Unlike COPPER,
+
+my work evaluates:
+
+- Recovery Success Rate
+- Recovery Time
+- Token Cost
+- Repair Accuracy
+- Coding Benchmark Performance (e.g., SWE-Bench)
+
+rather than QA or reasoning tasks.
+
+---
+
+# Key Contribution
+
+COPPER introduces:
+
+- Multi-agent self-reflection
+- Shared reflector architecture
+- Counterfactual reward mechanism
+- PPO-based reflector training
+
+to improve collaboration among LLM agents.
+
+---
+
+# Why this paper is important for my dissertation
+
+✅ Introduces reflective multi-agent systems.
+
+✅ Solves the credit assignment problem using counterfactual rewards.
+
+✅ Demonstrates shared reflection instead of separate reflectors.
+
+✅ Strong reference for self-reflection-based recovery mechanisms.
+
+✅ Provides ideas for evaluating agent collaboration.
+
+✅ Helps justify reflection-based failure recovery in autonomous coding agents.
+
+---
+
+# Citation
+
+Bo, X., Zhang, Z., Dai, Q., Feng, X., Wang, L., Li, R., Chen, X., & Wen, J. (2024).
+
+**Reflective Multi-Agent Collaboration based on Large Language Models (COPPER).**
+
+Proceedings of the 38th Conference on Neural Information Processing Systems (NeurIPS 2024).
