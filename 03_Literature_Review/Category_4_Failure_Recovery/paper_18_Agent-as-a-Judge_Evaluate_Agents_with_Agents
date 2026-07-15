@@ -1,0 +1,127 @@
+# Paper 18 – Agent-as-a-Judge: Evaluate Agents with Agents
+
+**Title:**
+Agent-as-a-Judge: Evaluate Agents with Agents
+
+**Authors:**
+Mingchen Zhuge et al.
+
+**Organization:**
+Meta AI & KAUST
+
+**Published:**
+October 2024 (arXiv)
+
+---
+
+# 1. Problem Statement
+
+Current evaluation methods for AI agents are inadequate.
+
+Most benchmarks (such as SWE-Bench) only evaluate the final outcome of an agent's task and ignore the intermediate reasoning process. Human evaluation is more reliable but is extremely expensive, slow, and difficult to scale.
+
+The authors propose **Agent-as-a-Judge**, where one AI agent automatically evaluates another AI agent throughout the entire task-solving process.
+
+:contentReference[oaicite:0]{index=0}
+
+---
+
+# 2. Methodology
+
+The paper introduces two major contributions:
+
+## (A) Agent-as-a-Judge Framework
+
+Instead of checking only the final answer, the judging agent evaluates:
+
+- Planning
+- Intermediate reasoning
+- Tool usage
+- File generation
+- Requirement satisfaction
+- Final task completion
+
+The framework includes multiple modules:
+
+- Graph
+- Locate
+- Read
+- Search
+- Retrieve
+- Ask
+- Planning
+- Memory
+
+These modules help the judge inspect the entire development process rather than only the final output.
+
+---
+
+## (B) DevAI Benchmark
+
+The authors also introduce a new benchmark called **DevAI**.
+
+DevAI contains:
+
+- 55 real-world AI software development tasks
+- 365 hierarchical requirements
+- 125 optional preferences
+
+The benchmark evaluates complete AI application development instead of only bug fixing.
+
+:contentReference[oaicite:1]{index=1}
+
+---
+
+# 3. Results
+
+Major findings include:
+
+- Agent-as-a-Judge aligns much better with human evaluation than LLM-as-a-Judge.
+- Human evaluation required **86.5 hours**.
+- Agent-as-a-Judge reduced evaluation cost to about **2–3%** of human evaluation.
+- Alignment with human judgments reached approximately **90%**.
+- The framework provides detailed intermediate feedback instead of only a final success/failure score.
+
+:contentReference[oaicite:2]{index=2}
+
+---
+
+# 4. Limitations
+
+- Focuses only on evaluation.
+- Does not improve or repair failed AI agents.
+- Does not introduce a self-reflection mechanism.
+- Does not enable autonomous recovery after failures.
+- Primarily validated on AI software development tasks.
+
+---
+
+# 5. How My Research is Different
+
+This paper evaluates whether an AI coding agent performs correctly.
+
+My research focuses on enabling an AI coding agent to recover after failure.
+
+Instead of only judging the agent, my proposed Self-Reflection-Based Failure Recovery Framework allows the agent to:
+
+- Detect failures
+- Analyze why the failure occurred
+- Generate reflective feedback
+- Revise its reasoning
+- Retry automatically
+- Improve task completion without human intervention
+
+Therefore, this paper provides an evaluation framework, while my dissertation proposes an autonomous recovery framework.
+
+---
+
+# Why This Paper is Useful
+
+This paper is valuable because it:
+
+- Shows the limitations of existing evaluation methods.
+- Introduces DevAI, a realistic benchmark for AI coding agents.
+- Demonstrates the importance of intermediate reasoning evaluation.
+- Provides strong motivation for intelligent self-improving coding agents.
+
+It supports my dissertation by showing that modern AI agents require richer feedback and better mechanisms for improving performance after failures.
