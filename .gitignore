@@ -1,0 +1,4 @@
+.env
+attempts/
+__pycache__/
+*.pyc

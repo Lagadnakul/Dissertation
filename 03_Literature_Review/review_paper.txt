@@ -1,0 +1,1185 @@
+                      Information and Software Technology
+
+Self-Reflection and Failure Recovery in Agentic AI Coding Systems: A Systematic
+                                                 Review
+
+                                                  --Manuscript Draft--
+
+Manuscript Number:     INFSOF-D-26-01742
+Article Type:
+Keywords:              Review article
+
+Corresponding Author:  Agentic AI; Autonomous Software Engineering; Large language models; Self-
+First Author:          Reflection; Failure Recovery; Software Engineering Agents; Memory-Augmented
+Order of Authors:      Learning; Autonomous Debugging; Root Cause Analysis; Multi-Agent Systems
+
+Abstract:              Nakul Lagad
+                       Parul Institute of Engineering and Technology
+
+                       Nakul Lagad
+
+                       Nakul Lagad
+
+                       Ramizraja Shethwala
+
+                       Mohammad Arif
+
+                       Recent developments in LLMs have made possible for autonomous software
+                       engineering agents to do various activities such as code creation, repository
+                       management, debugging, testing, and planning. Nevertheless, the dependability of
+                       these autonomous agents is still hampered by issues associated with failure recovery,
+                       adaptation, and learning from previous errors. This study offers an organized survey of
+                       the current literature comprising 35 papers about autonomous software engineering
+                       agents and specifically addresses issues associated with self-reflection, memory,
+                       planning, repository-aware reasoning, multi-agent cooperation, benchmarking, and
+                       failure recovery. The research identifies a number of research gaps in this area such
+                       as the absence of comprehensive recovery frameworks, root-cause analysis, memory-
+                       aided adaptive reasoning, recovery-based evaluation, and failure prevention. The
+                       results indicate that there is a need for development of recovery techniques that would
+                       allow autonomous software agents to recognize their failures, adjust their actions, and
+                       learn from their mistakes.
+
+Powered by Editorial Manager® and ProduXion Manager® from Aries Systems Corporation
+Declaration of competing interests
+
+                  Declaration of interests
+                  The authors declare that they have no known competing financial interests or personal relationships
+                  that could have appeared to influence the work reported in this paper.
+                  The authors declare the following financial interests/personal relationships which may be considered
+                  as potential competing interests:
+Manuscript                                                            Click here to view linked References
+
+Self-Reflection and Failure Recovery in Agentic AI
+       Coding Systems: A Systematic Review
+
+                               Nakul Lagad1,, Ramirzaja Shethwala2, Mohammad Arif3
+                                 1M.Tech Student 2Assistant Professor 3Professor
+                                    Department of Artificial Intelligence and Data Science
+
+                         Parul Institute of Engineering and Technology (PIET), Parul University
+                                                 Vadodara­390019, Gujarat, India
+                                                E-mail: nakullagad084@gmail.com
+
+                                   E-mail: ramizraja.shethwala17532@paruluniversity.ac.in
+                                                 E-mail: arif mohd2k@yahoo.com
+
+                                               Corresponding author: Nakul Lagad
+
+   Abstract--Context: Recent progress in LLMs now makes it            this range of abilities by allowing systems to interpret natural-
+possible to develop autonomous software engineering agents            language requirements, produce and manipulate code and
+capable of conducting such tasks as code generation, repositories     perform more complex software engineering tasks [1]-[3].
+manipulation, debugging, testing, and planning. Nonetheless, the
+agents' dependability is limited by issues related to failure            Nevertheless, software engineering in real life involves not
+recovery, adaptability, and learning from previous failures.          only coding. Software engineering tasks may demand under-
+                                                                      standing of requirements, navigation through the repository,
+   Objectives: The purpose of the paper is to review the literature   selection and manipulation of files, launching of development
+on autonomous software engineering agents, especially self-           tools and tests, responding to results of execution [4]-[6].
+reflection, memory, planning, repository reasoning, coordination      All these requirements have led to the appearance of the
+of agents, benchmarking, and failure recovery.                        agentic AI system capable of planning tasks, utilizing external
+                                                                      tools, performing actions, observing results, and changing its
+   Methods: Systematic literature review of 35 works is carried       behavior in the direction of the desired goal [2], [3], [7], [8].
+out in order to study how these capabilities have been studied in
+autonomous software engineering agents. Themes of the analyzed           In software engineering, this trend has produced au-
+studies were grouped and compared based on their capabilities,        tonomous coding agents able to accomplish repository-based
+contributions, evaluation environments, and limitations.              tasks with little human intervention. Systems including SWE-
+                                                                      Agent, AutoCodeRover, MAGIS, AgentCoder, and Aider show
+   Results: Among other findings, this review reveals that the        the increasing capability of AI agents in checking repositories,
+following capabilities have not been integrated into one complex      changing source code, using tools, running tests, and iter-
+of features: failure recovery with self-reflection, root cause anal-  atively refining the solution [5], [9]­[13]. However, despite
+ysis, memory-assisted adaptive reasoning, and recovery-oriented       these developments, autonomous coding agents suffer from
+evaluation. In addition, this review shows that there is a tendency   susceptibility to failures caused by inappropriate planning,
+of independent analysis of these capabilities in existing works.      wrong interpretation of the context of a project, wrong se-
+                                                                      lection of files, erroneous code generation, improper use of
+   Conclusion: In this way, the results highlight the significance    tools, and failed testing [9]­[11], [14]­[16].
+of consistent failure recovery mechanisms which allow for au-
+tonomous agents to be able to detect any failures, analyze the           One of the key limitations is that an agent can recognize
+reasons behind the failures, adjust their behavior accordingly,       the occurrence of an execution failure without being able to
+and enhance their efficiency.                                         understand its cause, leading to inefficiency or repetition of
+                                                                      repair attempts. To deal with this problem, various existing
+   Index Terms--Autonomous Software Engineering, Agentic AI,          strategies have considered self-reflection, automated debug-
+Large Language Models, AI Coding Agents, Self-Reflection, Fail-       ging, failure analysis, memory, planning, and failure recovery
+ure Recovery, Repository-Aware Agents, Software Engineering           [15], [17]­[22]. Self-reflection allows an agent to review
+Automation.                                                           previous actions and give feedback for future actions, whereas
+                                                                      failure recovery deals with diagnosing failures, changing the
+   Index Terms--Autonomous Software Engineering, Agentic AI,          strategy of execution, and reaching the goal.
+Large Language Models, AI Coding Agents, Self-Reflection, Fail-
+ure Recovery, Repository-Aware Agents, Software Engineering              While advances have been made individually in each of
+Automation.                                                           these areas, there exists a lack of cohesion in the literature
+                                                                      regarding reflection, memory, planning, debugging, and recov-
+                          I. INTRODUCTION
+
+   AI has become increasingly prevalent in software engineer-
+ing. The first tools based on AI have been aimed at completing
+code, spotting bugs, suggesting codes, and testing, while
+demanding significant human effort to make decisions and
+fix errors. Large Language Models (LLMs) have broadened
+ery. Specifically, the lack of a cohesive framework for recov-       environment. Subsequently, the results of the behavior can
+ery, root cause analysis, memory-based adaptive reasoning,           affect the actions of the agent [4]­[6], [11], [12], [25].
+and a thorough evaluation of the recovery process suggests
+that a synthesis of the current work is needed [15], [17]­[22].         Some examples of systems that embody this paradigm in-
+                                                                     clude SWE-Agent, AutoCodeRover, RepairAgent, and Open-
+   In light of this, this review provides a systematic review        Hands that use different sets of repository navigation, code
+of current literature in agentic AI coding systems, focusing         repair, planning, and tool execution [4], [11], [12], [25].
+specifically on self-reflection and failure recovery. This in-       The growing abilities of these systems have even led to the
+cludes a discussion of autonomous coding agents, reflection          creation of repository-level benchmarks such as SWE-Bench
+processes, memory and planning methods, tool use, debugging          for assessing the performance of systems on realistic software
+and repair, and evaluation. This review also highlights existing     engineering tasks [5], [6], [23], [24].
+approaches, open problems, and future research directions for
+more reliable self-reflective coding agents.                            However, there are still certain risks in using autonomous
+                                                                     coding agents because of wrong task interpretation, wrong
+   The rest of this paper is organized as follows. Section II        planning, mistakes in repository navigation, wrong file selec-
+introduces the relevant background concepts relating to agentic      tion, wrong code generation, mistakes in tool execution, or
+coding systems and their associated failure-recovery mecha-          failed tests. Since software engineering tasks involve inter-
+nisms. Section III discusses the methodology of the review and       dependent execution steps, an error made during the initial
+the literature used. Section IV analyzes the current work and        stages may propagate to the later stages. Thus, self-assessment,
+its advantages and disadvantages. Section V covers the primary       failure diagnosis, and recovery become essential elements of
+research gaps, and Section VI covers the future research             autonomous coding [1], [3], [13], [15], [16].
+directions.
+                                                                     C. Self-Reflection in Autonomous Coding Agents
+                          II. BACKGROUND
+                                                                        The notion of self-reflection implies that an AI agent has
+A. Agentic AI                                                        the capability to examine its reasoning, actions, and outcomes,
+                                                                     detect shortcomings, and utilize the feedback gained to make
+   An Agentic AI is an AI system that has the ability to pursue      better decisions in future [13], [17]­[21]. As for autonomous
+specific goals using reasoning, planning, decision making,           coding, reflection gives another chance to assess the approach
+manipulation of objects, memory and interaction with an              to solving the task in case something goes wrong with the
+environment [2], [3], [7], [8]. The difference between this kind     generated code, test results, or output from some of the tools
+of systems and traditional ones consists in the fact that while      used.
+traditional systems only produce a response to a user's request,
+agentic systems act by cycles of interpretation of the current          There are several examples of such approaches. Reflexion
+situation, choosing actions, observing their effect and changing     makes use of verbal feedback from previous experiences to
+future actions.                                                      modify reasoning in the next attempt; SELF-REFINE distin-
+                                                                     guishes between generation, evaluation, and refinement of the
+   In software engineering, this allows an agent to shift from       solution; Teaching Large Language Models to Self-Debug uses
+just generating code to executing a whole task by multiple           reflective reasoning for debugging, and ExpeL makes agents
+steps. An agent can analyze a software problem, choose               capable of using the experience gained previously [13], [17]­
+a sequence of actions, look at repository files, change file         [21].
+contents, run development tools, analyze the result and change
+the strategy if the outcome is not satisfy the task [3], [7], [16],     Typically, the reflective cycle includes generation of a
+[22]­[24].                                                           solution, its execution or evaluation, detection of undesirable
+                                                                     outcomes, feedback generation, and modification of further
+B. Autonomous Coding Agents                                          solution. The reflective cycle is especially applicable for
+                                                                     autonomous coding as navigation of a repository, file selection,
+   Autonomous coding agents are agentic AI systems aimed             the use of a tool or code generation can affect all other
+at completing multi-step tasks of software engineering with          stages, from compilation, through testing to execution. Thus,
+minimal human intervention. Autonomous coding agents uti-            reflection allows getting information about the necessity of
+lize LLM-based reasoning and perform the following steps:            change in the approach rather than repeating the same actions
+repository navigation, planning, tool usage, code modification,      [1], [4], [11], [12], [15].
+code execution, tests, and feedback [4], [9]­[12], [25]. This set
+of activities is distinct from conventional coding assistants that      Reflection approaches typically concentrate on outcome
+aid developers in code completion and suggestions of localized       evaluation after execution, not continuous reasoning analysis
+code changes.                                                        or cause detection. Such a drawback justifies the combination
+                                                                     of reflection with memory and failure-recovery mechanisms
+   Typically, the workflow of an autonomous coding agent             [15], [22], [28].
+starts with task interpretation followed by repository naviga-
+tion and task planning. Next, the agent selects relevant files,      D. Failure Recovery Mechanisms
+makes modifications to the code, runs commands or tools
+of development, and assesses the resulting behavior using               Failure recovery involves an agent's capability to identify
+compiler output, tests, or other kinds of feedback from the          an execution failure, determine its cause, change its reasoning
+or execution strategy and then pursue the task to its successful    memory, and procedural memory. Techniques such as A-MEM
+completion [1], [3], [15], [16], [22]. It does not involve          try to structure the valuable experiences and retrieve relevant
+repeating the same failed action, but may include learning          information during future reasoning [15], [26], [27]. Memory
+about the reason behind the action that led to the failure.         thus would allow self-reflection and failure recovery by offer-
+                                                                    ing previous debugging experience, execution trace, patches,
+   Autonomous coding may face failures at interpreting a task,      and failure recovery methods whenever similar failures would
+planning the action, searching through repositories, selecting      occur [1], [15], [22], [26], [27].
+files to work with, code generation, tool usage, API invocation,
+compiling, testing and debugging [1], [4], [5], [11], [12], [15].      However, in spite of such progress, memory systems suffer
+These actions depend on each other, therefore an initial failure    from difficulty in determining what kind of information should
+may result in further failures during execution. Recovery in        be saved, retrieved, updated, or removed. In addition, the
+this case requires both failure identification and adjustment.      retrieved memories could be irrelevant, outdated, or contra-
+                                                                    dictory, and could thus influence future reasoning. Moreover,
+   The existing methods apply reflection, memory, planning          the current techniques fail to combine memory with reflection,
+and tool adaptation to enable failure recovery [1], [13], [17]­     execution monitoring, and failure analysis [3], [15], [26], [27].
+[19], [26], [27]. A common structure of a recovery loop
+includes failure detection based on execution logs, compiler        F. Planning and Tool Utilization
+messages, test results, runtime exceptions and tool output;
+failure cause identification; production of feedback; revision         The ability to plan allows for coding agents to implement
+of an execution plan; and the execution of the revised plan.        high-level software engineering goals by breaking them down
+The loop is continued until the successful task completing or       into a series of steps. Planning includes task decomposition,
+certain termination criteria are met [1], [6], [15], [22], [26],    repository exploration, dependency analysis, code modifica-
+[27].                                                               tion, testing, debugging, and validation, but allows the execu-
+                                                                    tion strategy to be changed in reaction to feedback from the
+   Failure recovery plays a key role in repository-based soft-      environment [3], [5], [7], [16], [22].
+ware engineering because agents should coordinate the ac-
+tivities of repository scanning, dependency analysis, source           The autonomous coding agents are dependent on external
+code modifying, compiling, testing, debugging and validation.       development tools due to the necessity to interact with envi-
+Therefore, the recovery may need not just code fixing, but          ronments that are outside of the language model. The tools
+also changes in plans and tools as well as maintaining useful       could include terminals, repositories, compilers, debuggers,
+execution history between several iterations [1], [4], [11], [12],  testing frameworks, version-control systems, documentation,
+[20], [22], [27].                                                   and APIs to retrieve the necessary information, execute ac-
+                                                                    tions, and validate solutions [4], [5], [11], [12], [25].
+   Nevertheless, the existing solutions still lack something.
+There are approaches that repeat a reasoning after a failure           Therefore, planning and tool usage make up a feedback
+without properly determining its cause as well as those pro-        loop where the agent chooses the appropriate actions to take,
+viding reflection but without saving previous experience. Also,     invokes the necessary tools, observes their output, and adjusts
+most of them focus on individual execution failures and do          its future actions accordingly. Systems such as SWE-Agent,
+not consider a need for continuous adaptation throughout the        AutoCodeRover, RepairAgent, and OpenHands exhibit various
+software engineering process [1], [3], [15], [22], [26], [27].      combinations of planning, interaction with the repository, and
+                                                                    using external tools [4], [11], [12], [25].
+E. Memory Systems in Autonomous Coding Agents
+                                                                       However, poorly implemented planning and/or poor choice
+   Memory systems provide autonomous coding agents with             of tools might cause new failures. The agents might be
+the ability to save, retrieve, and re-use information gained from   doing redundant actions, choosing incorrect tools, or failing to
+past experiences. Different from conventional LLM reasoning         adapt their planning strategy when encountering unexpected
+that is mainly driven by the present context, long-running          execution results. Such flaws can lead to cascading failures
+software engineering tasks would need to retain information on      during various phases of autonomous software engineering [1],
+past decisions, past commands, code modifications, debugging        [3], [5], [15], [22].
+results, tool interactions, and execution failures [3], [7], [15],
+[27].                                                               G. Evaluation Benchmarks for Autonomous Coding Agents
+
+   Broadly speaking, memory could be classified into short-            The rise of the complexity of autonomous coding agents re-
+term and long-term information retention. Short-term memory         quires benchmarks that would allow for evaluation of software
+keeps the information needed for the current task, such as          engineering skills of an agent going beyond the capability of
+user inputs, execution logs, intermediate plans, tool outputs,      generating the required code. Repository tasks require the un-
+and source-code changes. Long-term memory stores the useful         derstanding of project structure, modifying source code, using
+experience such as past failures, debugging knowledge, repos-       development tools, executing tests, debugging and validating
+itory information, good solutions, and past tool use experience     results iteratively [4], [14], [23], [25], [28].
+that would be reused in future tasks [3], [15], [26], [27].
+                                                                       Among the benchmarks there is SWE-Bench which is
+   The recent memory systems have investigated various struc-       designed around the GitHub issues taken from open-source
+tured memory types, such as episodic memory, semantic               repositories. This benchmark asks the agent to understand
+the repository structure, find relevant source files, generate    1. Literature Search 2. Eligibility Screening                                                                     Literature Review Methodology
+patches, execute tests and check whether the suggested so-
+lution fixes the problem [4], [21]. Some other benchmarks                                                                                                                        3. Study Selection 4. Thematic Classification 5. Comparative Synthesis 6. Gap Identification
+cover broader capabilities of agents. For example, AgentBench
+evaluates the performance of LLM-based agents in interactive      SprIiEngESeEcroLXpipunlsko,,raeSn,cdAieCanrMcXeiDDv iLr,ect,  Tiatlgeasinanstdtahbesrteravcietws cshceocpkeed  crIitnecrliuasaiopnplainedd teoxcfulullsitoenxts  plraSenftnlueidncigtei,ostngo,orrolesuc,poaevndedrbyby,emangceehmnmotasr,yr,ks  Apcpaproaaabncidlhitleiismesci,toaemtvipiodanersnecdeb, y  Ufuntruerseorlveiesddeeanlritmcifhiiteaddtirioencstioannsd
+environments including reasoning, planning, tool use and
+decision-making while API-Bank tests the ability to use exter-    Fig. 1. Overview of the literature review methodology adopted in this study.
+nal APIs and RedCode considers security in code generation
+and execution [23], [25], [28]. Another possible source of                                               TABLE I
+evidence for studying AI coding assistants and autonomous         CLASSIFICATION OF THE SELECTED LITERATURE ACCORDING TO THE
+coding agents is AIDev dataset where AI assistsants take part
+in software development activities on a large scale like pull                                     RESEARCH TOPICS
+requests and repository actions [19].
+                                                                  Research Topic                                                Main Focus of the Research Area                                                                                                                                                                                                               References
+   While the existing benchmarks allow to evaluate task com-
+pletion and performance of software engineering, they usually     Autonomous                                                    Coding Exploring repositories, code writing, debugging, testing, and soft- P01­P06
+focus on the output rather than the process of reasoning,         Agents                                                                  ware engineering at the repository level
+planning, memory usage, self-evaluation or recovering from
+failures. Consequently, the evaluation of autonomous coding       Self-Reflection                                               Reflective reasoning, iterative improvement, self-evaluation, and P07­P12
+agents as their capabilities grow must include the efficiency                                                                   self-debugging
+of reasoning, the adaptation of the agent after the failure and
+learning experience from the previous executions [1], [3], [15],  Failure Recovery                                              Detection of failure, failure diagnosis, recovery techniques, and P13­P17
+[28].                                                                                                                           repair of software automatically
+
+                   III. REVIEW METHODOLOGY                        Memory Mechanisms                                             Short-term memory, long-term memory, episodic memory, and mem- P18­P22
+                                                                                                                                ory retrieval
+   This paper will examine recent works in relation to self-
+reflection and failure recovery mechanisms of autonomous          Planning and Tool Usage Task decomposition, planning for execution, tool selection, com- P23­P29
+artificial intelligence coding. Literature review was used as                                         mand execution, and workflow modification
+the methodology to analyze existing research in the fields of
+autonomous software engineering agents, reflective thinking,      Evaluation Benchmarks                                         Benchmark datasets, evaluation frameworks, task-success measure- P30­P35
+memory, planning, use of tools, and recovery methods. This                                                                      ment, and agent performance analysis
+review aims at providing an insight into the current state
+of affairs in the field while highlighting its limitations and       · Studies related to the use of autonomous AI coding agents
+opportunities for future research.                                      and agentic software engineering.
+
+A. Literature Search Strategy                                        · Research works that propose ideas for self-reflection, it-
+                                                                        erative development, or improvement of reasoning skills.
+   All the relevant publications have been identified through
+the most reputable scientific database, which include IEEE           · Research studies dealing with recovery from failure,
+Xplore, ACM Digital Library, SpringerLink, ScienceDirect,               debugging, or autonomous software repair.
+Scopus, and arXiv. This is due to the fact that the above
+mentioned databases consist of high-quality journal papers,          · Papers with proposals for memory systems, plans, and
+conference papers, and preprints related to the domain of               tools for autonomous software agents.
+artificial intelligence, software engineering, large language
+models, and autonomous agent systems.                                · Benchmark data sets for autonomous coding systems.
+                                                                     · Peer-reviewed articles, conference proceedings, and im-
+   The relevant literature was searched using keywords
+in different combinations including: "Agentic AI", "Au-                 portant preprints written during the period between 2023
+tonomous Coding Agents", "Self-Reflection", "Failure Re-                and 2026.
+covery", "LLM Agents", "Memory Systems", "Planning",
+"Tool Use", "Software Engineering Agents", "SWE-Agent",           C. Exclusion Criteria
+"OpenHands", "AutoCodeRover", "RepairAgent", "Reflex-
+ion", "SELF-REFINE", and "SWE-Bench". The Boolean op-                The following studies were not included in the review:
+erators such as AND and OR were used in the search proce-
+dure.                                                                · Papers irrelevant to autonomous software engineering and
+                                                                        coding agents.
+B. Inclusion Criteria
+                                                                     · Studies dedicated to the topic of code generation without
+   The chosen studies met one or more of the following                  autonomous reasoning and execution.
+criteria:
+                                                                     · Research papers with insufficient technical information
+                                                                        or experiments.
+
+                                                                     · Duplicate papers and foreign language literature.
+                                                                     · Opinion pieces, blog entries, tutorials, and technical re-
+
+                                                                        ports.
+
+                                                                  D. Paper Classification
+
+                                                                     After the process of screening was done, the articles were
+                                                                  grouped together based on what they have contributed towards
+                                                                  research. These groups include autonomous coding agents,
+                                                                  self-reflection techniques, failure recovery methods, memory
+                                                                  techniques, planning and tools usage, benchmarks, and eval-
+                                                                  uation. This categorization allows for an easy comparison of
+                                                                  approaches that have been done previously and the identifi-
+                                                                  cation of the trends, shortcomings, and gaps in the research
+                                                                  field.
+                     IV. LITERATURE REVIEW                         and check the results by executing and testing generated
+                                                                   programs. Examples of such agents include AutoCodeRover,
+   As LLMs evolve rapidly, intelligent software engineer-          SWE-agent, RepairAgent, and OpenHands [3]­[6].
+ing has moved beyond assisting coding into developing au-
+tonomous agents that can accomplish complex development               Also worth noting is the trend of moving from assessment
+tasks with minimal human involvement. Unlike the conven-           of stand-alone code quality to assessment of autonomous task
+tional code generation tools that mainly assist code comple-       execution. In recent literature, planning, actions sequence, tool
+tion and generation, the agentic approach to intelligent soft-     usage, intermediate error handling, and successful completion
+ware engineering combines reasoning, planning, knowledge of        of the repository-level task is being more and more taken into
+repositories, tool utilization, memory, and decision-making in     account. Consequently, assessment is shifting from function-
+order to aid multi-step software engineering tasks.                level correctness to more realistic software engineering sce-
+                                                                   narios.
+   The literature that is currently available discusses many
+research areas such as repository-aware coding agents,                Despite this progress, autonomous coding agents continue
+multi-agent collaboration, self-reflection, iterative reasoning,   to be susceptible to errors that arise during the process of
+memory-driven learning, debugging, failure recovery, tool          exploring repositories, planning, using tools, and intermedi-
+utilization, planning, and benchmarking. Despite significant       ate reasoning. These errors could propagate over subsequent
+progress made in the autonomous software engineering field         execution steps; however, many systems still depend on re-
+in these research areas, each of these research topics is usually  execution and/or repair without detecting the root cause of
+studied separately.                                                failure or learning from their failures.
+
+   In order to structure the review, the studies examined in this     Overall, the literature indicates an unmistakable shift from
+paper will be divided into five major thematic groups. The         AI-based assistance in programming to more autonomous
+first group deals with the evolution of intelligent software en-   agents for software engineering that have greater capabilities
+gineering agents. The second one considers self-reflection and     in reasoning, planning, repository analysis, and tool usage.
+iterative reasoning, whereas the third one addresses memory-       Nevertheless, robust long-horizon execution proves to be dif-
+based learning and experience reusing. The fourth one deals        ficult enough to warrant studies of self-reflection, memory, and
+with the problem of failure recovery and autonomous debug-         failure recovery. These topics are discussed in the subsequent
+ging. The last one addresses planning, tool use, benchmarking      subsections.
+and new agent architectures.
+                                                                   B. Self-Reflection and Iterative Reasoning in Autonomous
+   This paper uses integrative analysis as a way of examining      Software Engineering Agents
+each line of research with respect to its evolution, abilities,
+weaknesses and interrelation with other components of au-             In this regard, as autonomous software engineering agents
+tonomous software engineering. Such an approach enables to         continue to emerge, their success is determined not only by
+see the field in general and helps find gaps in failure recovery.  their capability of formulating proper solutions but also by
+                                                                   their ability to evaluate, revise, and enhance their own reason-
+A. Evolution of Intelligent Software Engineering Agents            ing processes in the course of task execution. While traditional
+                                                                   code generation approaches tend to yield one solution for one
+   Intelligent software engineering agents have been developed     question, autonomous agents run through long horizon tasks
+alongside advances in LLMs, evolving from simple code assis-       such as exploring repositories, task decomposition, invoking
+tance to full autonomy in software engineering. Initially, AI-     tools, code transformation, testing, debugging, and decision
+based coding assistants offered only simple suggestions such       making. In this context, an erroneous choice of actions taken
+as code snippets and completion based on context. Despite          at the early stages of the process can have a cumulative effect
+increasing the productivity of developers, they were still not     and cause the agent to fail with the task at hand. In order to
+able to function without human assistance when it came to          address this problem, more research has been done into self-
+repository exploration, reasoning, debugging, and managing         reflection and iterative reasoning.
+software. Recent research focuses on fully autonomous agents
+capable of repository understanding, task decomposition, tool         Reflection is regarded as one of the most effective
+interaction, and execution feedback utilization.                   paradigms for enhancing the reasoning skills of autonomous
+                                                                   agents. In contrast to accepting their solution without any
+   The shift is not only motivated by advances in language         further deliberations, reflective agents critically review their
+model technology but also by reasoning, planning, understand-      reasoning at the intermediate stage, detect possible contra-
+ing repositories, collaboration, and tool interaction in agentic   dictions, provide feedback in order to correct them and fi-
+systems. As shown in recent literature, LLM-based software         nally change their way of decision making. Research on the
+engineering agents may assist in activities such as requirement    impact of verbal reinforcement learning, self-feedback loop
+analysis, implementation, testing, debugging, maintenance,         and reflective reasoning on the efficiency of task completion
+and software evolution [1], [2].                                   shows that reflecting on one's mistakes helps in performing the
+                                                                   task better [7]­[9]. All the three paradigms mentioned above
+   Moreover, repository-level programming agents illustrate        show that reflection acts as an internal supervisor helping
+this trend. Unlike traditional code generators, they have the
+capability to explore project structure, find appropriate files,
+analyze dependencies, modify code, use development tools,
+                                                                  TABLE II
+                               EVOLUTION OF INTELLIGENT SOFTWARE ENGINEERING AGENTS
+
+Research Stage                 Primary Characteristics                             Major Capabilities                               Representative Studies                  Remaining Challenges
+AI-Assisted Programming                                                            Code generation, code completion, code ex-       Early AI programming assistants
+                               LLMs generate code suggestions and comple-          planation, development assistance.                                                       Limited reasoning abilities, non-
+                               tion, but developers have full control of software                                                   AutoCodeRover [3], RepairAgent [5]
+                               development.                                        Repository navigation, bug detection, code                                               autonomous,   intensive  human
+                                                                                   modification, testing, bug fixing.               SWE-agent [4], OpenHands [6]
+                               Agents understand repository architecture and                                                                                                involvement.
+                               can accomplish project-based software engineer-     Tool invocation, terminal interaction, itera-    Multi-Agent Software Engineering Sur-
+Repository-aware  Coding       ing activities.                                     tion, repository exploration.                    vey [1], Software Engineering 3.0 [2].  Agents lack the ability to adapt after errors
+Agents                                                                                                                              Contemporary agentic software engi-     during their execution.
+                               Agents interact with development environments       Planning, collaboration, task distribution, co-  neering research
+Interactive  Autonomous        via external tools and command line interface to    ordinated reasoning, workflow management.                                                Execution errors propagate to multiple
+Agents                         accomplish software engineering tasks.                                                                                                       reasoning steps.
+                                                                                   Autonomous reasoning, planning, tools us-
+Collaborative Software Engi-   Multiple autonomous agents collaborate to ac-       age, execution and software engineering au-                                              Coordination complexity, scalability, eval-
+neering Agents                 complish difficult software engineering tasks by    tomation.                                                                                uation, and communication overhead.
+                               decomposing them and coordinating.
+Towards           Intelligent                                                                                                                                               Self-referencing, failure recovery, mem-
+Autonomous         Software    Contemporary research centers on agents with                                                                                                 ory and autonomous decision-making still
+Engineering                    high autonomy that have capabilities to reason,                                                                                              constitute an open research question.
+                               plan, learn and adapt during software engineer-
+                               ing.
+
+autonomous agents to improve their reasoning skill without                         same observations have been made concerning the autonomous
+being trained.                                                                     computer agents working in interactive software systems [14].
+
+   On top of reflective reasoning, iterative reasoning has also                       Even with all the advancements realized through the appli-
+emerged as an important area of study towards improving                            cation of reflective reasoning technology, there are still a num-
+software engineering by means of autonomous software en-                           ber of critical problems that exist. First, most of the existing
+gineering. Rather than considering software production as one                      models consider the process of self-reflection as something
+inference task, modern software engineering is being studied                       that occurs after execution rather than a continuous process
+as a continuous optimization task where repeated reasoning                         of autonomous decision-making during execution. Second, the
+leads to better and better solutions through reasoning. Self                       present models are more concerned with evaluating the results
+debugging and iterative reasoning have shown that using                            of execution rather than the process of reasoning itself. This is
+execution feedback, agents can be guided to recognize any                          because reflection will only realize that there has been some
+logical contradictions, fix the mistakes in implementation,                        sort of mistake made but will not explain why the mistake has
+and generate better and better solutions [8], [10]. Iterative                      been made and how reasoning can be changed in the future
+reasoning improves robustness in comparison to one shot code                       to prevent such mistakes from happening.
+generation.
+                                                                                      In general, current research indicates that self-reflection and
+   Moreover, current research has even enhanced the scope of                       reasoning improvement considerably increase the efficiency of
+self-reflection not only by extending it beyond personal rea-                      autonomous software engineering agents through their ability
+soning but also through experiential learning and collaborative                    for continuous refinement of reasoning, learning, and im-
+intelligence. Instead of forgetting the execution history once                     provement of execution efficiency. This method is critical for
+the task is performed, modern autonomous agents maintain not                       reliable autonomous software engineering. However, reflection
+only successful but also unsuccessful experience that could be                     does not suffice to ensure robust autonomous functioning as
+used in future reasoning. Through experiential learning, agents                    reasoning improvement presupposes that agents store infor-
+are able to utilize their previous experience when facing the                      mation about past tasks. As a result, recent studies focus on
+same software engineering problems, thus avoiding repeated                         memory-based learning that would supplement the process
+mistakes in reasoning and making better decisions in the                           of reflective reasoning providing means for accumulation,
+long term [11]. In addition, through reflective collaboration                      structuring, and retrieval of information from long execution
+of several agents possessing specific reasoning capabilities, it                   history. This memory system will be analyzed in the next
+becomes possible to assess the intermediate decisions, provide                     section.
+each other with feedback and perfect solutions collaboratively
+[12].                                                                              C. Memory-Driven Learning in Autonomous Software Engi-
+                                                                                   neering Agents
+   In addition to the increasing significance of reflective rea-
+soning itself, this has led to a number of thorough studies                           Whereas self-reflection makes it possible for software engi-
+on self-correction methods. The surveys available group the                        neering agents to perform reasoning evaluation and improve-
+existing methods into iterative improvement, feedback-based                        ment while performing a certain task, sustainable autonomous
+correction, verification via external information sources, self-                   task performance calls for the capability to persist knowl-
+consistency reasoning, and adaptive revision techniques [13].                      edge past execution instances. Software engineering tasks are
+All of the studies taken together show that while the method                       repetitive in nature and are characterized by interactions with
+of reflective reasoning always leads to increased quality of                       various artifacts including repositories, APIs, development
+results, most existing approaches still rely on task-specific                      tools and debugging environments. Thus, treating a software
+implementations and mainly aim at improving final results,                         engineering task as a unique reasoning instance may lead to
+not controlling reasoning during full work processes. The                          errors, redundancy and inefficient decision making. Recent
+research has, in this regard, focused on memory-based learning    tasks.
+strategies that make it possible for autonomous agents to retain     Limitation number two refers to the poor integration of
+knowledge from different software engineering tasks.
+                                                                  memory components and autonomous software engineering
+   Modern research findings indicate that memory structures       processes. Even though current architectures enable the re-
+are gradually shifting from being based on conversational         tention of past experience, there is relatively little research
+history to becoming knowledge management systems. Mod-            on how traces of execution, debugging process, reflections,
+ern agentic memories incorporate structures of information        and failures can be integrated into one memory component
+storage through semantic connections, hierarchies of memory,      in order to enhance future autonomous reasoning capabilities.
+and methods of retrieval which are similar to those used          As a result, the majority of intelligent software engineering
+by humans. Unlike memory structures that store the entire         agents are still utilizing memory components that enable them
+conversation history, the contemporary memory structure only      to retrieve information, but not learn from past experience.
+stores useful experience of execution while updating irrelevant
+information continually. Adaptive memory structure helps the         Thus, generally, the existing literature reveals the fact that
+autonomous agent to access task-related knowledge without         memory-based learning has become a key element in the
+flooding the reasoning process with unnecessary information       development of modern autonomous software engineering
+[15], [16].                                                       agents. With memory architecture allowing for knowledge
+                                                                  persistence, adaptation, and learning, autonomous software en-
+   Another important area of research is concerned with           gineering becomes more consistent in reasoning and decision-
+long-term memory as a technique for continuous learning.          making process. However, at the same time, the existing
+Current literature indicates that having consistent memory        memory methods mostly deal with increasing the availability
+across several interactions is very helpful when it comes to      of the information rather than solving the problems connected
+increasing the reasoning consistency of an agent, decreasing      with failed execution processes. In order to make an agent
+its execution errors, and improving its ability to complete       autonomous and reliable, it is necessary not only to allow it
+long-term tasks. Instead of considering reasoning only with       to remember its past experiences but also to explain to it the
+respect to the immediate execution context, long-term memory      reasons for failures, diagnose them, revise its reasoning, and
+makes it possible to store gained knowledge for longer periods    restore itself from failed attempts. The issue will be covered
+of time, which is useful for decision making during future        in the next subsection.
+software engineering processes. Evaluation results using long-
+term reasoning and conversation benchmarks also show that            The evolutionary trend that characterizes intelligent soft-
+memory-augmented agents always outperform agents without          ware engineering agents discovered during literature review is
+memory [17].                                                      depicted in Fig. 2.
+
+   Apart from information storage, recent studies on memory          While contemporary agents utilize reasoning, tool interac-
+have come to regard memory as an active reasoning process         tion, self-reflection, and memory-based learning more than
+rather than a passive information store. The recent memory        before, the area of resilient recovery remains relatively poorly
+systems are designed such that they are continuously interact-    developed. This issue will be considered in greater detail in
+ing with the reasoning, planning, and action modules during       the next section.
+the entire process of decision making. Memories retrieved
+from storage help in task decomposition, choice of tools,         D. Failure Recovery and Autonomous Debugging
+navigation through the repository, and debugging through the
+provision of solutions used before. Thus, memory not only            The increased autonomy of intelligent software engineering
+helps in information storage but also makes the reasoning         agents has greatly enhanced their capabilities to successfully
+process more efficient and saves time and effort in exploring     perform complicated programming tasks with little to no
+unproductive avenues.                                             human intervention. On the other hand, increased autonomy
+                                                                  brings new problems of execution reliability, which means that
+   Nevertheless, some critical challenges still have to be ad-    while in the case of usual software programs the computer
+dressed in this regard. First of all, most current memory         simply performs the set of actions that were programmed in
+systems concentrate mainly on providing an efficient mech-        advance, in the case of autonomous agents, decision-making
+anism for accessing the information, without paying much          is constantly happening during the process of repository
+attention to analyzing the quality of the memories themselves.    browsing, task planning, programming, debugging, testing, and
+Therefore, faulty memories will continue to affect the process    interactions with tools. As a result, an error in any step of
+of reasoning, causing wrong conclusions to be made. Secondly,     reasoning can affect the entire chain of execution and lead to
+current methods do not consider memory handling in conjunc-       failure in task accomplishment.
+tion with reflective reasoning and execution monitoring, which
+makes it impossible for the agent to make a decision about           Initial studies have mostly been concerned with addressing
+which experiences need to be saved, modified, or deleted after    failures within the context of automated program repair. In
+executing the task successfully or unsuccessfully. Finally, the   such cases, the problem-solving involved is related to detecting
+technique of memory access still relies heavily on similarity     faults within program code, proposing potential fixes for them
+searches that may lead to ignoring valuable experiences in new    and evaluating such fixes using existing test suites. According
+                                                                  to recent surveys, it has been found that the use of Large
+                                                                  Language Models has contributed to significant improvements
+   AI-Assisted      Repository-Aware       Interactive and          Reflective and        Failure-Resilient
+ Programming               Agents           Collaborative              Memory-          Autonomous Agents
+
+ Code generation   Repository reasoning         Agents              Driven Agents        Root-cause analysis
+Code completion      Patch generation                                                    Adaptive replanning
+Developer support   Automated testing      Tool interaction         Self-evaluation
+Human-controlled        Project-level    Task decomposition       Iterative refinement     Failure recovery
+                          operation      Agent coordination        Experience reuse      Emerging direction
+                                         Environment-aware        Learning-oriented
+
+                                         Increasing autonomy, environmental interaction, learning capability, and execution resilience
+
+Fig. 2. Evolution of intelligent software engineering agents from AI-assisted programming toward reflective and failure-resilient autonomous systems. The
+reviewed literature indicates a gradual integration of repository-level reasoning, environmental interaction, multi-agent collaboration, self-reflection, memory-
+driven learning, and adaptive recovery capabilities. Failure-resilient autonomous software engineering remains an emerging research direction.
+
+in automated program repair by improving fault localization,      successive iterations of execution. This type of debugging has
+the quality of proposed patches and overall accuracy of fixes in  proved more reliable than the traditional approach to software
+a wide range of programming-related problems [18]. However,       generation based only on one-time reasoning.
+such approaches tend to focus on treating faults as isolated
+source code issues and fail to take into consideration the           While iteration helps in achieving better execution, most of
+reasoning process behind autonomous decision making.              the recovery mechanisms currently available are reactive in
+                                                                  nature. Most of the current systems do not conduct recovery
+   In addition, the appearance of repository-aware program-       until there is an actual failure; either they reattempt previous
+ming agents has made the difficulty of execution errors even      reasoning with slight changes or develop new implementa-
+more apparent. Unlike previous repair mechanisms, repository-     tions. The problem with such processes is that they usually
+aware coding agents constantly interact with the software         lack specific methods for determining reasons for failures, as
+repository, with other development tools, with the command        well as differentiating reasoning errors from execution errors
+line, and testing framework. This interaction increases the       and storing information on failures for future use. Thus, agents
+number of possible errors, such as wrong task decomposition,      tend to make the same reasoning errors again and again.
+invalid repository operation, wrong choice of tool, execution-
+time exceptions, dependency errors, as well as cascading errors      Moreover, the emergence of benchmarking-based researches
+in reasoning. As a result, the current benchmarking methods       has drawn attention towards the necessity of developing more
+for coding agents changed their attention from evaluation of      thorough approaches of measurement, which would be able
+the correctness of the code to the evaluation of the whole        not only to estimate the completion of the final task but also
+software engineering process under realistic development con-     measure the autonomous recovery. Current benchmarks allow
+ditions [19], [20]. Nevertheless, the main purpose of these       one to assess the performance of software engineering through
+benchmarks is to evaluate the success of the task, not the        such measures as task success rate, execution correctness,
+reason of the error.                                              benchmark completion, and correctness of the task itself. On
+                                                                  the other hand, not much work has been done on the estimation
+   Consequently, current research has started to examine ex-      of the recovery capacity of an agent, which includes finding
+ecution failures as a unique research problem in itself rather    the reasons for failure, changing the reasoning and execution
+than as mere failures in the execution phase. Through exam-       process, and recovering from the failed attempt at intermediate
+ining cases of autonomous agent failures, it has been found       execution.
+that execution failures are generally caused by reasoning
+flaws, planning problems, memory retrieval errors, interaction       As an aggregate, the above-mentioned body of literature
+difficulties with the environment, and inadequate tool use,       shows that significant advancements have been made in the
+in addition to mere code generation problems [21]. The            direction of enhancement of autonomous debugging, execution
+above observation implies that software engineering failures in   monitoring, and software repair. However, failure recovery is
+autonomous agents are likely cumulative in nature, whereby        still relatively less explored in comparison with reasoning,
+one initial reasoning error cascades into a series of planning    planning, and learning based on memory. The vast majority of
+mistakes, ultimately leading to total failure of the task.        existing literature focuses on reflection, debugging, planning,
+                                                                  or software repair independently without trying to combine
+   A further critical research direction is related to enhancing  them into one single recovery process able to analyze execu-
+autonomous debugging via iterative execution-based reason-        tion traces, find the cause of the failure, use its past expe-
+ing. Modern debugging approaches use execution feedback,          rience and make corresponding adjustments in reasoning in
+output from various tools, compiler messages, and other ex-       the future. Given the growing complexity of the development
+ecution information to reason about new iterations. Instead       tasks undertaken by autonomous software engineering agents,
+of stopping at the point where execution fails, agents per-       overcoming such gaps will be crucial in the future.
+form repeated analysis of the results obtained, change their
+implementation approach, and produce better solutions via
+E. Planning, Tool Utilization, Benchmarks, and Emerging           in reasoning, adaptation and recovery during the execution
+Agent Architectures                                               process.
+
+   Modern autonomous software engineering agents' capabil-           Not only individual reasoning components but also recent
+ities go way beyond code generation and debugging. The            research efforts concentrate on the development of full-fledged
+success of such agents in practice largely hinges on the          autonomous agent architectures that would combine all of
+development of intelligent planning techniques, third-party de-   the reasoning abilities (reasoning itself, planning, memory, re-
+velopment tools, standard benchmarks for evaluation, as well      flection, environment interaction) in one software engineering
+as the scalability of agent architecture that altogether make     system. All existing surveys prove the idea that modern agent
+reliable autonomous software engineering possible. In turn,       architectures become more and more complex and move from
+such directions in research serve as an operational basis for     single agent pipelines to modular and collaborative architec-
+efficient reasoning, reflection, memory, and failure recovery in  tures consisting of several reasoning components dedicated
+software engineering.                                             to such functions as planning, memory management, tools
+                                                                  execution, communication, and decision-making [28]­[31].
+   Planning has become one of the crucial aspects of au-
+tonomous decision making since the software engineering              The next emerging trend is associated with the shift from
+processes cannot be considered as a chain of just a few           the paradigm of isolated autonomous agents to continuously
+reasoning steps. An autonomous agent needs to divide its          evolving software engineering ecosystems. Instead of execut-
+high-level goals into a series of subtasks which include, but     ing individual programming tasks, agentic software engineer-
+are not limited to, exploration of the repository, analyzing      ing systems cooperate with external services, development
+dependencies between components of the project, modifying         infrastructure, organizational knowledge databases, and even
+the code, testing, debugging, and validation. Recent research     other agents to perform complex software engineering tasks.
+proves that the hierarchical approach to planning results in      This trend can be considered a part of the larger shift from
+significant increase of the efficiency of agent execution by      developing individual language models in artificial intelligence
+allowing agents to break down complex processes in software       to intelligent software engineering ecosystems that are able to
+engineering into executable actions, rather than inferring them   learn, collaborate and make decisions continuously [29], [31],
+directly from the language model [22], [23].                      [32].
+
+   Very similar to the previous point is the rise in the usage       However, all things considered, the literature reviewed indi-
+of external software engineering tools. The contemporary          cates that recent progress in the areas of planning methodolo-
+autonomous agent not only relies only on its language model       gies, tool usage, benchmarks creation, and modular agent de-
+capabilities but also interacts with the integrated development   sign significantly broadened the scope of autonomous software
+environment, command line interface, compiler, debugger,          engineering tools capabilities. All these different technolo-
+testing framework, version control system, and application        gies together create the necessary framework to facilitate the
+programming interface (API). These kinds of interaction pro-      process of intelligent reasoning, self-reflection, memory-based
+vide much larger capabilities to the autonomous agent in terms    learning, and autonomous operation within the realistic envi-
+of extracting external information, performing development-       ronment of software engineering. Nonetheless, despite these
+related commands, validating generated code, and receiving        advancements in the research domain, current investigations
+real execution feedback for future reasoning processes. All       continue to examine each one of these aspects independently,
+the extensive studies conducted on the use of tool-assisted       producing fragmented autonomous workflows that cannot en-
+language models prove that proper use of the tools greatly        sure their robustness in the course of multi-step processes.
+increases applicability of such software engineering agents       In order to understand these advantages and disadvantages
+[24], [25].                                                       systematically, a comparative review of the literature reviewed
+                                                                  is needed. Thus, the next chapter of this paper presents a
+   Moreover, the fast development of autonomous software          comparative analysis of the chosen literature.
+engineering has led to an urgent need for standardized methods
+of evaluating autonomous agents' performance. The former                             V. COMPARATIVE ANALYSIS
+approaches to evaluation focused on the code correctness
+and benchmark accuracy; nevertheless, today the autonomous           Even with advancements that have been made in auto-
+agents need a much broader set of criteria for their evaluation.  mated software engineering through reasoning, planning, self-
+Modern benchmarking frameworks include such criteria as           reflection, memory, debugging, tool usage and collaborative
+repository knowledge, reasoning, planning, tools, execution       agent architectures, the studies considered here vary in terms
+and task completion within the context of realistic software en-  of their goals, methods, environments for evaluation and
+gineering environments [19], [20], [26], [27]. Today, the need    capabilities.
+for evaluation methodologies is crucial in order to compare
+the performance of autonomous agents in various software             These studies will be compared based on their focus, contri-
+engineering scenarios using standardized data for experiment      butions, self-reflection, memory, planning, tool usage, recovery
+[19], [20], [26], [27]. However, the current approaches to        from failures, evaluation environments and weaknesses. E, P
+evaluation still focus on outcomes and are rather ineffective     and "­" denote the capabilities that are addressed, partially
+                                                                  addressed and not considered in each study, respectively, in
+                                                                  Table III. Table III.
+                                                       TABLE III: Comparative Analysis of the Selected Studies
+
+Ref. Primary Focus Principal Contribution                    Self- Mem. Plan. Tool Rec. Evaluation Context Major Limitation
+                                                             Ref.
+
+[1] Multi-agent      Considers LLM-based multi-agent         P P E E P Literature review and Includes wide coverage, but lacks
+
+systems for          systems throughout the software         software engineering empirical analysis of failure-
+
+software             development life cycle and highlights   case studies                                       recovery integration.
+
+engineering          coordination and architectural
+
+                     problems.
+
+[2] AI teammates     Investigates how autonomous             P P E E P Large repository and Emphasizes new development
+
+and Software         coding agents have become software      pull request datasets, techniques, not explicit root cause
+
+Engineering 3.0 engineering teammates in practice,           developers, and coding identification and failure recovery.
+
+                     based on evidence from large            agents
+
+                     repositories and pull requests.
+
+[3] Autonomous       Proposes AutoCodeRover for              P ­ E E P SWE-Bench repository- The proposed recovery strategy is
+
+repository-          exploring repositories, locating        level software problems still patch-based without reuse of
+
+level program        failures, proposing patches, and                                                           failure knowledge between different
+
+improvement          validating them.                                                                           tasks.
+
+[4] Interfaces       Proposes SWE-agent and shows that P ­ E E P SWE-Bench and                                  Depends heavily on interface design
+
+between agents well-designed interfaces enhance              HumanEvalFix                                       and lacks root-cause-oriented
+
+and computers navigation, editing, testing, and                                                                 recovery.
+
+for software         debugging of the repository.
+
+engineering
+
+[5] Autonomous       Proposes RepairAgent that               P ­ E E E Automated program- Focuses on fixing source-code
+
+program repair autonomously localizes faults,                repair tasks in practice problems rather than reasoning and
+
+using large          generates patches, executes tools,                                                         planning issues.
+
+language models and validates the repair iteratively.
+
+[6] Open platform for Offers OpenHands, a platform for       P P E E P Repository-level                         Offers infrastructure and evaluation
+
+generalist software building, running, and evaluating        software-engineering framework without dedicated
+
+agents               autonomous software engineering         tasks                                              failure-recovery mechanisms.
+
+                     agents.
+
+[7] Verbal           Introduces Reflexion and                E E P P E Reasoning, decision- The recovery process depends on
+
+Reinforcement        allows agents to produce verbal         making, and                                        the quality of agent reflections and
+
+Learning through reinforcement feedback, store               programming tasks does not include detailed diagnosis
+
+Reflection           reflections, and enhance future                                                            of execution failures.
+
+                     attempts.
+
+[8] Iterative        Introduces SELF-REFINE and              E ­ P ­ P Text generation,                         Improves generated outputs through
+
+Improvement          separates generation, self-evaluation,  reasoning, and                                     iterations but does not possess
+
+through Self-        and refinement without retraining an    programming tasks persistent memory or detailed
+
+Feedback             additional model.                                                                          execution-failure diagnosis.
+
+[10] Self-Debugging Allows LLMs to evaluate generated E ­ P P E Program generation and Primarily measures individual
+
+of Generated         programs, understand execution          debugging benchmarks programs rather than repository-
+
+Programs             feedback, and debug logical errors.                                                        based coding-agent trajectories.
+
+[9] Effect of self-  Empirically studies the role of         E ­ P ­ P General problem-                         Reflection may be ineffective
+
+reflection on        reflective reasoning in enhancing       solving experiments on some tasks and may produce
+
+problem solving problem-solving skills of LLM                                                                   incorrect reasoning.
+
+                     agents.
+
+[11] Experiential    Proposes ExpeL, in which agents         E E P P E Reasoning and agent Transfer of experience may become
+
+learning by LLM gain, store, and use lessons learned         tasks                                              ineffective when tasks differ greatly
+
+agents               from successful and unsuccessful                                                           from stored examples.
+
+                     experiences.
+
+[12] Reflective multi- Proposes reflective cooperation in    E P E P P Reasoning and multi- Reflection among multiple agents
+
+agent cooperation which agents specialize and exchange       agent tasks                                        requires additional communication
+
+                     comments to improve intermediate                                                           and coordination.
+
+                     solutions.
+
+[13] Review of LLM Groups self-correction approaches         E P P P P Literature on cross- Current approaches are fragmented,
+
+self-correction      into feedback, refinement,              domain self-correction task-specific, and difficult
+
+approaches           verification, and iterative revision                                                       to evaluate using a common
+
+                     categories.                                                                                methodology.
+
+[14] Self-improving Presents OS-Copilot for continual        E E E E P Operating-system                         Focuses on general computer
+
+generalist computer improvement through interaction, tool    environment for                                    interaction and provides limited
+
+agents               execution, and experience reuse.        interactive use                                    specialization for repository-related
+
+                                                                                                                code defects.
+
+[18] LLM automated Systematically reviews LLM-based P P P E E Automated program Focuses on software faults
+
+program repair approaches to fault localization, patch       repair literature                                  and patch correctness rather
+
+approach             generation, validation, and repair.                                                        than execution trajectories of
+
+                                                                                                                autonomous agents.
+
+[19] Benchmark       Proposes SWE-Bench using                ­ ­ P E ­ GitHub issues from Tests final issue solving but
+
+for software-        GitHub issues requiring repository      open-source projects provides limited information about
+
+engineering          knowledge, code modifications, and                                                         intermediate failures and recovery.
+
+repositories         testing verification.
+
+[20] Evaluation of LLM Proposes AgentBench for reasoning, ­ ­ E E ­ Various environments Provides broad evaluation but does
+
+agents in general planning, decision-making, and             for interactive agents not focus on software-specific root
+
+terms                interaction across various agent                                                           cause analysis and recovery.
+
+                     environments.
+
+[26] Evaluation of   Proposes Agent-as-a-Judge for           P ­ P P ­ Agent evaluation and Evaluation quality depends on the
+
+autonomous agents evaluating complex trajectories            trajectory judging tasks judging agent.
+
+based on agents through other intelligent agents.
+
+                                                                                                                                              Continued on next page
+Ref. Primary Focus Principal Contribution                        Table III ­ Continued from previous page       Major Limitation
+
+                                                                 Self- Mem. Plan. Tool Rec. Evaluation Context
+                                                                 Ref.
+
+[33] Self-improving Describes SICA, an agentic                   E P E E P SWE-Bench,                           Globally optimizes agent
+
+coding agents           programming tool capable of              LiveCodeBench, and implementation without diagnosing
+
+                        modifying itself to enhance efficiency   synthetic benchmarks and recovering from individual task
+
+                        and tool capabilities.                                                                  execution failures.
+
+[34] Index of deployed Surveys 30 deployed agents by             P P P E ­ Documentation and Uses mainly publicly available
+
+agentic AI systems technical capability, autonomy,               developer information information without experimental
+
+                        environment interaction, evaluation,     for 30 deployed agents evaluation.
+
+                        safety, and transparency.
+
+[15] Dynamic            Proposes A-MEM to establish              P E P ­ P Long-term agent                      Focuses on memory organization
+
+agentic memory dynamic associations, organization,               memory and reasoning rather than failure diagnosis or
+
+organization            evolution, and retrieval of agent                                                       recovery of coding agents.
+
+                        experiences.
+
+[17] Long-term          Proposes LOCOMO for evaluating           ­ E ­ ­ ­ Long-term conver-                    Evaluates conversational memory
+
+conversational          long-term memory, temporal               sational memory                                but does not consider software
+
+memory assessment reasoning, and consistency in                  benchmark                                      engineering agents.
+
+                        prolonged conversations.
+
+[16] Memory             Introduces MIRIX with episodic,          P E P P P Long-term multimodal Memory coordination can be
+      architecture for  semantic, procedural, resource, and
+      multi-agents      knowledge memories.                      and agent memory                               complex and introduce additional
+
+                                                                                                                storage and computational overhead.
+
+[32] Vibe coding versus Differentiates prompt-based code         P P E E P Conceptual and                       Provides conceptual insights but
+
+agentic coding generation from autonomous, tool-                 practical analysis                             lacks extensive empirical evaluation.
+
+                        driven, and goal-oriented code
+
+                        generation.
+
+[27] Benchmarking       Introduces RedCode-Exec and              ­ ­ P E ­ Code-execution and Assesses safety but does not
+
+the safety of code RedCode-Gen frameworks for                    code-generation safety address post-failure recovery.
+
+agents                  assessing code execution risk and        benchmarks
+
+                        malicious code generation.
+
+[21] LLM agent failure Presents AgentErrorTaxonomy for           E E E E E Trajectories of                      Offers explicit failure analysis
+
+analysis and            systematic failure classification,       ALFWorld, GAIA,                                and iterative recovery, though
+
+recovery                AgentErrorBench for annotated            and WebShop agents it evaluates these capabilities
+
+                        failure trajectories, and AgentDebug                                                    within general agent settings
+
+                        for failure root cause localization,                                                    rather than repository-level software
+
+                        feedback, and iterative recovery.                                                       engineering.
+
+[24] Benchmarking for Introduces API-Bank to test tool           ­ ­ E E P API Call, Retrieve-and- Provides limited evaluation of
+
+augmented LLMs calling, tool retrieval, tool-call                Call, and Plan-Retrieve- persistent learning, root cause
+
+                        planning, and executable tool use.       and-Call tasks                                 identification, and long-term
+
+                                                                                                                recovery.
+
+[25] Survey on tool use Surveys architectural approaches for P P E E P Survey of tool-                          Broad survey without empirical
+
+by LLMs                 discovering, selecting, calling, and     augmented LLM                                  comparison of software-engineering
+
+                        learning to use external tools.          methodologies                                  recovery techniques.
+
+[22] Task planning and Presents TPTU covering perception, P P E E P One-step and sequential Provides a conceptual framework
+
+tool usage for AI task planning, tool use, learning, re-         agent environments but lacks evaluation in program-
+
+agents                  flection, memory, and summarization.                                                    ming environments.
+
+[23] Low-shot grounded Introduces LLM-Planner for high-          ­ P E P E ALFRED embodied- Demonstrates replanning outside
+
+planning and            level planning and dynamically           task environment                               software engineering and lacks
+
+replanning              grounded replanning in embodied                                                         repository-level coding evaluation.
+
+                        tasks.
+
+[28] Survey of recent Studies single-agent, multi-agent,         E E E E P Literature synthesis at Provides extensive architectural
+
+agent architectures vertical, and horizontal architectures       architecture level                             discussion but limited empirical
+
+                        for reasoning, planning, memory,                                                        analysis of failure recovery.
+
+                        reflection, and tool calling.
+
+[35] Multi-agent robotic Proposes SMART-LLM for task             ­ ­ E P P AI2-THOR simulation Robotic-domain assumptions
+
+task planning           decomposition, coalition formation,      and physical robots restrict applicability to repository-
+
+                        resource allocation, and completion                                                     level software-engineering failure
+
+                        by heterogeneous robots.                                                                scenarios.
+
+[29] Agentic AI         Reviews frameworks, architectures, E E E E P Systematic review of Its broad scope makes an in-depth
+
+concepts                applications, evaluation approaches,     143 studies                                    study of self-reflective recovery
+
+                        and challenges in agentic AI                                                            in autonomous coding systems
+
+                        research.                                                                               difficult.
+
+[30] Comprehensive Provides a PRISMA-based taxonomy E E E E P Systematic review of 90 Focuses on agent architectures and
+
+review of agentic of symbolic and neural architectures,          studies                                        governance rather than coding-
+
+AI                      applications, frameworks, governance,                                                   specific execution recovery.
+
+                        and future perspectives.
+
+[31] LLM-based          Presents a unified architecture          E E E E P Autonomous-agent                     Provides a general taxonomy
+                                                                                                                without a specialized recovery
+autonomous agents covering profiling, memory, planning,          literature                                     architecture based on root cause
+                                                                                                                analysis.
+                        action, applications, and challenges in
+
+                        agent evaluation.
+
+Notation: E = explicitly implemented or centrally evaluated; P = partially implemented, indirectly supported, or discussed; ­ = not addressed as a principal capability.
+Self-Ref. = self-reflection, Mem. = memory, Plan. = planning, Tool = tool utilization, Rec. = failure recovery.
+A. Cross-Study Capability Analysis                                 agent needs to interpret the execution feedback, identify the
+                                                                   reason of failure, modify its plan, make use of previous
+   It can be seen from Table III that planning and tool utiliza-   experience, and move forward with the execution.
+tion are among the most frequent capabilities found in the re-
+viewed works. Repository-based agents like AutoCodeRover,             It must be noted that the research opportunity in question is
+SWE-agent, RepairAgent, and OpenHands prove that mod-              not about inventing failure recovery per se. On the contrary,
+ern autonomous software-engineering systems are capable            it lies in developing and implementing an effective failure
+of traversing through repositories, modifying source code,         recovery approach for autonomous coding systems based on
+executing tools, conducting tests, and attempting software-        self-reflection. This kind of research can be developed on the
+engineering tasks by trial and error. However, the above-          basis of previous failure analysis studies.
+mentioned capabilities only provide the necessary basis for
+operating in an autonomous manner without necessarily pro-         B. Critical Discussion
+viding some explicit means of learning from intermediate
+failures in multiple executions of the agent.                         The comparative analysis suggests the following three re-
+                                                                   lated lines of research in the current literature. The first one
+   Iterative reasoning and improving the behavior of the agent     includes code agent for repositories and automatic program-
+have been studied quite extensively in terms of self-reflection.   repair systems. These systems are very powerful in terms of
+Such language models as Reflexion, SELF-REFINE, self-              their abilities to navigate through a repository, modify code,
+debugging, and others show that agents can assess previous         interact with tools, test, debug and generate patches. However,
+outputs, give feedback and use it to improve their subsequent      their primary goal is typically to resolve the problem posed
+actions. The above-mentioned studies prove that self-reflection    or to repair the discovered defect. The inner trajectory of the
+is a critical component of the adaptive behavior of the agent.     agent and the link between intermediate failure and recovery
+Nevertheless, there is a wide variety of ways in which re-         are not necessarily the objects of study.
+flection can be related to the agent's failures and execution
+processes in general.                                                 The second line of research is based on self-reflection, self-
+                                                                   correction, and experience-based learning techniques. Tech-
+   Memory-based approaches provide another important ca-           niques such as reflexion, SELF-REFINE, self-debugging and
+pability. Studies such as ExpeL, A-MEM, LOCOMO, and                experiential learning prove that agents are able to analyze their
+MIRIX investigate the storage, organization, retrieval, and        previous attempts and use the feedback or experience gained
+reuse of previous experiences. Such mechanisms can support         in order to improve their future actions. These techniques are
+persistent learning and reduce repeated reasoning. Neverthe-       crucially important for adaptive reasoning; however, they are
+less, memory alone does not guarantee that an agent can            tested either on general reasoning or isolated program level or
+identify which previous experience is relevant to a newly          not on a repository at all.
+encountered coding failure or determine whether the stored
+experience should influence replanning.                               The third research direction covers explicit failure analysis
+                                                                   and agent debugging. P26 offers significant progress in this re-
+   Furthermore, the comparison highlights that the topic of        gard by presenting a structured failure taxonomy, a benchmark
+failure recovery is by now no longer unexplored from a             of agent trajectories, and the approach to debugging allowing
+research perspective. Indeed, many works explore explicitly        to localize root causes of failure and give feedback. This study
+debugging, self-correction, program repair, reflection, or re-     shows that failure analysis can enhance further behavior of an
+covery mechanisms. In particular, P26 proposes AgentError-         agent. However, its evaluation is made in terms of general
+Taxonomy, AgentErrorBench, and AgentDebug to categorize            agent environments including embodied, web-interaction, and
+agent failures, isolate the root cause, provide feedback, and      general assistant tasks. Hence, the conclusions offer a valuable
+perform iterative recovery. Nevertheless, importantly, P26 as-     conceptual and methodological basis, but leave the problem of
+sesses these mechanisms on ALFWorld, GAIA, and WebShop             coding uncovered.
+datasets and not at a software engineering level. It means
+that their results allow us to claim that failure diagnosis           All in all, the reviewed works point to the major problem
+and recovery is possible, but do not prove directly how            that remains unresolved ­ that is, whether an autonomous
+these mechanisms work on coding tasks which imply code             agent is capable of reflecting, remembering, debugging, or
+navigation, modifications, testing, build failures, dependencies,  recovering from failure is not in question. Instead, the key
+and code execution at repository level.                            challenge is how to adapt such mechanisms to particular
+                                                                   features of the autonomous software engineering execution.
+   The comparison therefore opens another research direction.      A coding agent makes a series of repository observations,
+The current literature provides plenty of evidence on individual   decision-making, tool use, source code changes, attempts to
+capacities like reflection, memory, planning, tools usage, de-     compile or execute, get test results, and make further decisions.
+bugging, and failure recovery. Nevertheless, these capabilities    Failure at any step can influence later stages of the trajectory.
+are investigated separately from different perspectives and are    Recovery requires the agent to recognize different types of
+validated in completely different scenarios. In particular, we     failures and understand if they require a revision of the code,
+should study how to adapt failure-aware reflection mechanism       change in the plan, modification of tool actions, retrieval of
+specifically for repository-level coding scenarios, where the      the relevant experience, or re-interpretation of the initial task
+                                                                   description.
+   This consideration provides for a more specific research         tation and dynamic learning. The system needs not only to
+direction ­ failure recovery based on self-reflection for agentic   recall previously executed code but to consider whether the
+coding systems. In such a framework, one can explore how an         previously collected data is relevant and applicable to the
+autonomous coding agent detects the failure of the execution,       current software engineering task. There are three promising
+what failure is likely to have occurred, what reflection is done    directions in memory architecture development ­ dynamic
+regarding the failed action or decision, whether relevant failure   memory prioritization, experience abstraction, and failure-
+experience is used, the plan is revised, and the task is executed   aware memory.
+again. Thus, the contribution is proposed as a coding-specific
+integration and evaluation issue rather than as something new          Moreover, it is necessary to emphasize the demand for
+in the field of failure recovery or root-cause analysis.            creating more comprehensive benchmark datasets and evalu-
+                                                                    ation methods for autonomous recovery purposes. Any future
+   The comparison also shows that evaluation needs to take          benchmarking frameworks have to go beyond evaluating task
+into account more than just the success of the task. Evalua-        execution and incorporate numerical metrics of recovery per-
+tion of coding agents can be done through recovery-oriented         formance, including recovery accuracy, cause identification,
+measurements such as failure diagnosis accuracy, recovery           adaptation, planning, execution efficiency, error avoidance,
+success rate, recovery attempts, decreased number of repeated       computational cost, and learning. In such a way, the devel-
+failures, tool invocation, execution cost, recovery latency,        opment of standardized recovery-oriented benchmarks would
+and correctness of software. Evaluating these parameters will       allow for the objective evaluation of autonomous coding
+help understand whether self-reflection is truly enhancing the      agents and accelerate the development of autonomous software
+reliability of autonomous coding trajectories or just increasing    engineering systems.
+the number of executions.
+                                                                       One more direction of further development of the considered
+C. Future Research Directions                                       technology concerns the improvement of computational effi-
+                                                                    ciency of the proposed solutions. Reflection, debugging, and
+   The research deficiencies discussed in the above-mentioned       execution multiple times take much time and require additional
+sub-section prove the following point: Autonomous software          computation. Therefore, further studies should be devoted
+engineering is evolving from isolated intelligent components        to creating adaptive recovery techniques that could balance
+to integrated, adaptive, and continuously learning software         between execution robustness and computational efficiency,
+engineering system. Accordingly, future research should be          providing reflection optimization, recovery triggering, plan-
+aimed not only at improvement of single components but also         ning depth, and resource-efficient reasoning. Such approaches
+at creating of autonomous systems able to perform robust long-      could help in efficient utilization of autonomous software
+horizon software engineering in realistic software development      engineering agents in industrial settings.
+environments.
+                                                                       Lastly, next-generation autonomous software engineering
+   One possible way of future research is related to creation       systems must shift focus from reactive execution recovery
+of integrated autonomous recovery frameworks consisting of          to proactive execution management. In addition to correcting
+reasoning, planning, self-reflection, memory management, de-        errors during execution, intelligent agents need to monitor
+bugging, and adaptive execution. In contrast to the mentioned       execution paths, predict failure probability, detect hazardous
+independent components, future systems should provide in-           reasoning patterns, and plan ahead for possible issues that
+teraction between them throughout the entire process of soft-       may lead to errors propagating across the entire software engi-
+ware engineering. Such integration will allow for autonomous        neering process. Predictive failure detection, uncertainty-based
+agent's monitoring of execution process, interpretation of          planning, and continuous execution monitoring all constitute a
+failures, updating of reasoning policies, retrieval of experi-      significant advancement towards reliable autonomous software
+ence, and adjustment of decisions without the use of isolated       engineering processes with minimum human intervention.
+recovery techniques.
+                                                                       In general, future research efforts need to concentrate on
+   An additional direction worth exploring is root cause anal-      the incorporation of reasoning, memory, planning, execution
+ysis and its implementation into autonomous coding agents.          monitoring, and adaptive execution recovery into autonomous
+Currently used approaches tend to fix the problem of execution      software engineering systems. By developing these research
+without discovering how exactly the reasoning process led to        directions, not only can the robustness and efficiency of intel-
+this failure. In the future, there is a need to develop approaches  ligent coding agents be improved, but also intelligent software
+capable of tracing the process of execution failures throughout     engineering systems capable of handling complicated software
+several reasoning phases, separating the problem into planning      engineering tasks can be developed faster. The integrated
+mistakes and execution flaws, finding connections between           autonomous failure recovery workflow synthesized from the
+navigating the repository, using tools, reasoning, and the          reviewed literature is illustrated in Fig. 3.
+execution process outcome. This approach can greatly increase
+the efficiency of autonomous systems working in the domain                                    VI. CONCLUSION
+of software engineering.
+                                                                       Substantial progress was achieved in the field of au-
+   In addition, the memory architecture needs to go beyond          tonomous software engineering by creating LLM-powered
+just storing experiences and move towards contextual adap-          coding agents that can comprehend repositories, generate code,
+Planning                                                                                                     REFERENCES
+
+ Task Execution      Root Cause Analysis                                         [1] J. He, C. Treude, and D. Lo, "Llm-based multi-agent systems for
+Failure Detection       Self-Reflection                                               software engineering: Literature review, vision, and the road ahead,"
+Memory Retrieval                                                                      ACM Transactions on Software Engineering and Methodology, vol. 34,
+                                                                                      no. 5, pp. 124:1­124:30, 2025.
+Adaptive Replanning
+                                                                                 [2] H. Li, H. Zhang, and A. E. Hassan, "The rise of ai teammates in software
+              Re-execution                                                            engineering (se 3.0): How autonomous coding agents are reshaping
+                                                                                      software engineering," 2025.
+  Reliable Agentic Coding System
+                                                                                 [3] Y. Zhang, H. Ruan, Z. Fan, and A. Roychoudhury, "Autocoderover:
+Fig. 3. Workflow for integrated autonomous failure recovery based on the              Autonomous program improvement," in Proceedings of the 33rd ACM
+reviewed literature. The diagram depicts how planning, failure identification,        SIGSOFT International Symposium on Software Testing and Analysis
+cause identification, reflection, memory recall, adaptation, and re-execution         (ISSTA). ACM, 2024, pp. 1592­1604.
+can be integrated to make agentic AI coding more reliable.
+                                                                                 [4] J. Yang, C. E. Jimenez, A. Wettig, K. Lieret, S. Yao, K. R.
+debug, plan, utilize tools, and execute tasks iteratively. The                        Narasimhan, and O. Press, "SWE-agent: Agent-computer interfaces
+review focused on the latest studies related to self-reflection,                      enable automated software engineering," in Advances in Neural
+memory, planning, multi-agents cooperation, benchmarking,                             Information Processing Systems (NeurIPS), vol. 37, 2024. [Online].
+and failure recovery to summarize the state-of-the-art knowl-                         Available: https://openreview.net/forum?id=mXpq6ut8J3
+edge on autonomous coding systems.
+                                                                                 [5] I. Bouzenia, P. Devanbu, and M. Pradel, "Repairagent: An autonomous,
+   It has been demonstrated that self-reflection can be used                          llm-based agent for program repair," in Proceedings of the 47th
+to enable iterative reasoning and correction, while memory                            IEEE/ACM International Conference on Software Engineering (ICSE),
+can help reuse previous experiences. Planning and tool uti-                           2025, pp. 2188­2200.
+lization allow for the accomplishment of multi-step tasks, and
+multi-agents cooperation might lead to better performance on                     [6] X. Wang, B. Li, Y. Song, F. F. Xu, X. Tang, M. Zhuge, J. Pan,
+challenging software engineering tasks. Nevertheless, all of                          Y. Song, B. Li, J. Singh, H. H. Tran, F. Li, R. Ma, M. Zheng, B. Qian,
+these features are studied independently. The review identified                       Y. Shao, N. Muennighoff, Y. Zhang, B. Hui, J. Lin, R. Brennan,
+a gap related to the lack of combined failure recovery solutions                      H. Peng, H. Ji, and G. Neubig, "Openhands: An open platform for ai
+that integrate reflection, cause analysis, memory, planning,                          software developers as generalist agents," in International Conference
+and adaptive execution. There is a lack of approaches for                             on Learning Representations (ICLR), 2025.
+the assessment of the effectiveness of the failure recovery
+process, its efficiency, root cause detection, and proactive                     [7] N. Shinn, F. Cassano, A. Gopinath, K. Narasimhan, and S. Yao, "Re-
+failure prevention.                                                                   flexion: Language agents with verbal reinforcement learning," Advances
+                                                                                      in Neural Information Processing Systems (NeurIPS), vol. 36, 2023.
+   With respect to these results, future studies need to concen-
+trate on integrated failure recovery architectures, cause aware                  [8] A. Madaan, N. Tandon, P. Gupta et al., "Self-refine: Iterative refinement
+reasoning, adaptive memory, recovery oriented benchmarks,                             with self-feedback," Advances in Neural Information Processing Systems
+efficient resource utilization and predictive failures. In general,                   (NeurIPS), vol. 36, 2023.
+this review is an organized summary of the studies conducted
+on agentic programming focusing on failure recovery and                          [9] M. Renze and E. Guven, "Self-reflection in llm agents: Effects on
+self reflection capabilities along with limitations and research                      problem-solving performance," in First Workshop on Foundational
+directions.                                                                           Large Language Models (FLLM), 2024. [Online]. Available: https:
+                                                                                      //arxiv.org/abs/2405.06682
+
+                                                                                [10] X. Chen, M. Lin, N. Scha¨rli, and D. Zhou, "Teaching large
+                                                                                      language models to self-debug," in International Conference on
+                                                                                      Learning Representations (ICLR), 2024. [Online]. Available: https:
+                                                                                      //arxiv.org/abs/2304.05128
+
+                                                                                [11] A. Zhao, D. Huang, Q. Xu, M. Lin, Y.-J. Liu, and G. Huang, "Expel: Llm
+                                                                                      agents are experiential learners," in Proceedings of the AAAI Conference
+                                                                                      on Artificial Intelligence (AAAI), vol. 38, no. 17, 2024, pp. 19 632­
+                                                                                      19 640.
+
+                                                                                [12] X. Bo, Z. Zhang, Q. Dai, X. Feng, L. Wang, R. Li, X. Chen, and
+                                                                                      J.-R. Wen, "Reflective multi-agent collaboration based on large lan-
+                                                                                      guage models," in Advances in Neural Information Processing Systems
+                                                                                      (NeurIPS), vol. 37, 2024.
+
+                                                                                [13] L. Pan, M. Saxon, W. Xu, D. Nathani, X. Wang, and W. Y. Wang, "Auto-
+                                                                                      matically correcting large language models: Surveying the landscape of
+                                                                                      diverse automated correction strategies," Transactions of the Association
+                                                                                      for Computational Linguistics, vol. 12, pp. 484­506, 2024.
+
+                                                                                [14] Z. Wu, C. Han, Z. Ding, Z. Weng, Z. Liu, S. Yao, T. Yu, and
+                                                                                      L. Kong, "Os-copilot: Towards generalist computer agents with self-
+                                                                                      improvement," arXiv preprint, vol. arXiv:2402.07456, 2024.
+
+                                                                                [15] W. Xu, Z. Liang, K. Mei, H. Gao, J. Tan, and Y. Zhang, "A-mem:
+                                                                                      Agentic memory for llm agents," in Advances in Neural Information
+                                                                                      Processing Systems (NeurIPS), vol. 38, 2025.
+
+                                                                                [16] Y. Wang and X. Chen, "Mirix: Multi-agent memory system for llm-based
+                                                                                      agents," arXiv preprint, vol. arXiv:2507.07957, 2025.
+
+                                                                                [17] A. Maharana, D.-H. Lee, S. Tulyakov, M. Bansal, F. Barbieri, and
+                                                                                      Y. Fang, "Evaluating very long-term conversational memory of llm
+                                                                                      agents," in Proceedings of the 62nd Annual Meeting of the Association
+                                                                                      for Computational Linguistics (ACL), 2024, pp. 13 851­13 870.
+
+                                                                                [18] Q. Zhang, C. Fang, Y. Xie, Y. Ma, W. Sun, Y. Yang, and Z. Chen,
+                                                                                      "A systematic literature review on large language models for auto-
+                                                                                      mated program repair," ACM Transactions on Software Engineering and
+                                                                                      Methodology, 2026.
+
+                                                                                [19] C. E. Jimenez, J. Yang, A. Wettig, S. Yao, K. Pei, O. Press, and
+                                                                                      K. Narasimhan, "Swe-bench: Can language models resolve real-world
+                                                                                      github issues?" in The Twelfth International Conference on Learning
+                                                                                      Representations (ICLR), 2024.
+[20] X. Liu, H. Yu, H. Zhang, Y. Xu, X. Lei, H. Lai, Y. Gu, H. Ding,                  code agents," in Advances in Neural Information Processing Systems
+      K. Men, K. Yang, S. Zhang, X. Deng, A. Zeng, Z. Du, C. Zhang,                   (NeurIPS) Datasets and Benchmarks Track, 2024.
+      S. Shen, T. Zhang, Y. Su, H. Sun, M. Huang, Y. Dong, and J. Tang,         [28] T. Masterman, S. Besen, M. Sawtell, and A. Chao, "The landscape of
+      "Agentbench: Evaluating llms as agents," in The Twelfth International           emerging ai agent architectures for reasoning, planning, and tool calling:
+      Conference on Learning Representations (ICLR), 2024.                            A survey," arXiv preprint, vol. arXiv:2404.11584, 2024.
+                                                                                [29] A. Bandi, B. Kongari, R. Naguru, S. Pasnoor, and S. V. Vilipala, "The
+[21] K. Zhu, Z. Liu, B. Li, M. Tian, Y. Yang, J. Zhang, P. Han, Q. Xie,               rise of agentic ai: A review of definitions, frameworks, architectures, ap-
+      F. Cui, W. Zhang, X. Ma, X. Yu, G. Ramesh, J. Wu, Z. Liu, P. Lu,                plications, evaluation metrics, and challenges," Future Internet, vol. 17,
+      J. Zou, and J. You, "Where llm agents fail and how they can learn from          no. 9, p. 404, 2025.
+      failures," arXiv preprint arXiv:2509.25370, 2025. [Online]. Available:    [30] M. A. Ali, F. Dornaika, and J. Charafeddine, "Agentic ai: A com-
+      https://arxiv.org/abs/2509.25370                                                prehensive survey of architectures, applications, and future directions,"
+                                                                                      Artificial Intelligence Review, vol. 59, p. 11, 2026.
+[22] J. Ruan, Y. Chen, B. Zhang, Z. Xu, T. Bao, G. Du, S. Shi, H. Mao, Z. Li,   [31] L. Wang, C. Ma, X. Feng, Z. Zhang, H. Yang, J. Zhang, Z. Chen,
+      X. Zeng, and R. Zhao, "Tptu: Task planning and tool usage of large              J. Tang, X. Chen, Y. Lin, W. X. Zhao, Z. Wei, and J. Wen, "A survey on
+      language model-based ai agents," in Foundation Models for Decision              large language model based autonomous agents," Frontiers of Computer
+      Making Workshop at NeurIPS, 2023.                                               Science, vol. 18, no. 6, p. 186345, 2024.
+                                                                                [32] R. Sapkota, K. I. Roumeliotis, and M. Karkee, "Vibe coding vs. agentic
+[23] C. H. Song, J. Wu, C. Washington, B. M. Sadler, W.-L. Chao, and Y. Su,           coding: Fundamentals and practical implications of agentic ai," arXiv
+      "Llm-planner: Few-shot grounded planning for embodied agents with               preprint, vol. arXiv:2505.19443, 2025.
+      large language models," in Proceedings of the IEEE/CVF International      [33] M. Robeyns, M. Szummer, and L. Aitchison, "A self-improving
+      Conference on Computer Vision (ICCV), 2023, pp. 2998­3007.                      coding agent," arXiv preprint, vol. arXiv:2504.15228, 2025. [Online].
+                                                                                      Available: https://arxiv.org/abs/2504.15228
+[24] M. Li, Y. Zhao, B. Yu, F. Song, H. Li, H. Yu, Z. Li, F. Huang, and Y. Li,  [34] L. Staufer, K. Feng, K. Wei, L. Bailey, Y. Duan, M. Yang, A. P. Ozisik,
+      "Api-bank: A comprehensive benchmark for tool-augmented llms," in               S. Casper, and N. Kolt, "The 2025 ai agent index: Documenting technical
+      Proceedings of the 2023 Conference on Empirical Methods in Natural              and safety features of deployed agentic ai systems," in Proceedings of the
+      Language Processing (EMNLP), 2023, pp. 3102­3116.                               2026 ACM Conference on Fairness, Accountability, and Transparency
+                                                                                      (FAccT). ACM, 2026, pp. 1536­1576.
+[25] Z. Shen, "Llm with tools: A survey," arXiv preprint, vol.                  [35] S. S. Kannan, V. L. N. Venkatesh, and B.-C. Min, "Smart-llm: Smart
+      arXiv:2409.18807, 2024.                                                         multi-agent robot task planning using large language models," arXiv
+                                                                                      preprint, vol. arXiv:2309.10062, 2024.
+[26] M. Zhuge, C. Zhao, D. R. Ashley, W. Wang, D. Khizbullin, Y. Xiong,
+      Z. Liu, E. Chang, R. Krishnamoorthi, Y. Tian, Y. Shi, V. Chandra, and
+      J. Schmidhuber, "Agent-as-a-judge: Evaluate agents with agents," arXiv
+      preprint, vol. arXiv:2410.10934, 2024.
+
+[27] C. Guo, X. Liu, C. Xie, A. Zhou, Y. Zeng, Z. Lin, D. Song, and
+      B. Li, "Redcode: Risky code execution and generation benchmark for
+

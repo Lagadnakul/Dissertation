@@ -1,0 +1,33 @@
+--- a/astropy/modeling/separable.py
++++ b/astropy/modeling/separable.py
+@@ -58,18 +58,23 @@ def _separable(transform):
+
+
+ def _cstep(left, right):
+-    cleft = _coord_matrix(left, 'left', left.n_inputs + right.n_inputs)
+-    cright = _coord_matrix(right, 'right', left.n_inputs + right.n_inputs)
+-    return np.vstack([cleft, cright])
++    cleft = _separable(left)
++    cright = _separable(right)
++    out1, in1 = cleft.shape
++    out2, in2 = cright.shape
++    result = np.zeros((out1 + out2, in1 + in2), dtype=bool)
++    result[:out1, :in1] = cleft
++    result[out1:, in1:] = cright
++    return result
+
+
+ def _cdot(left, right):
+-    cleft = _coord_matrix(left, 'left', left.n_inputs)
+-    cright = _coord_matrix(right, 'right', right.n_inputs)
++    cleft = _separable(left)
++    cright = _separable(right)
+     return np.dot(cright, cleft)
+
+
+ def _arith(left, right):
+-    cleft = _coord_matrix(left, 'left', left.n_inputs)
+-    cright = _coord_matrix(right, 'right', right.n_inputs)
++    cleft = _separable(left)
++    cright = _separable(right)
+     return np.logical_or(cleft, cright)

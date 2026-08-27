@@ -1,0 +1,230 @@
+# Paper 09
+
+## Title
+
+Teaching Large Language Models to Self-Debug
+
+---
+
+## Authors
+
+Xinyun Chen
+Maxwell Lin
+Nathanael Schärli
+Denny Zhou
+
+---
+
+## Year
+
+2024
+
+---
+
+## Conference
+
+ICLR 2024
+
+---
+
+# 1. What problem does this paper solve?
+
+Large Language Models can generate code very well.
+
+However, for difficult programming tasks, the first generated code is often incorrect.
+
+Existing approaches usually generate many different solutions and select the best one.
+
+This requires:
+
+• Many samples
+
+• High token cost
+
+• Large computation
+
+Instead of generating new code repeatedly, this paper teaches an LLM to debug its own generated code.
+
+The idea is simple:
+
+Write code
+
+↓
+
+Check it
+
+↓
+
+Explain it
+
+↓
+
+Find mistakes
+
+↓
+
+Fix them
+
+↓
+
+Repeat
+
+This process is called SELF-DEBUGGING.
+
+---
+
+# 2. What methodology is used?
+
+The paper introduces a framework called SELF-DEBUGGING.
+
+The workflow is:
+
+Problem
+
+↓
+
+Generate Code
+
+↓
+
+Execute Code
+
+↓
+
+Explain Generated Code
+
+↓
+
+Generate Feedback
+
+↓
+
+Repair Code
+
+↓
+
+Repeat until correct
+
+The feedback can come from:
+
+• Unit Test Results
+
+• Execution Results
+
+• Code Explanation
+
+• Execution Trace
+
+One important idea is **Rubber Duck Debugging**.
+
+Instead of asking another person,
+
+the LLM explains every line of code to itself.
+
+During this explanation,
+
+it discovers mistakes automatically.
+
+No additional training is required.
+
+Only prompting is used.
+
+---
+
+# 3. What results are achieved?
+
+The framework was tested on several benchmarks.
+
+These include:
+
+• Spider (Text-to-SQL)
+
+• MBPP
+
+• TransCoder
+
+Major findings:
+
+• Improves coding accuracy by up to **12%**
+
+• Improves SQL generation by **2–9%**
+
+• Improves difficult SQL tasks by **9%**
+
+• Requires fewer sampled solutions
+
+• Matches or outperforms methods using 10× more generated programs
+
+Most debugging tasks finish within **3 iterations**, even though the framework allows up to 10.
+
+---
+
+# 4. What are the limitations?
+
+• Strong LLMs perform much better than weaker models.
+
+• Debugging quality depends on execution feedback.
+
+• Multiple iterations increase inference time.
+
+• Requires executable code for best performance.
+
+• Unit tests greatly improve debugging quality.
+
+• Without execution feedback, improvements become smaller.
+
+---
+
+# 5. How is my research different?
+
+SELF-DEBUGGING focuses on fixing generated code.
+
+My dissertation focuses on recovering an entire Agentic AI Coding System after failures.
+
+SELF-DEBUGGING repairs code.
+
+My framework repairs the whole agent workflow.
+
+My proposed framework includes:
+
+• Failure Detection
+
+• Failure Classification
+
+• Self-Reflection
+
+• Root Cause Analysis
+
+• Memory of Previous Failures
+
+• Planning New Repair Strategy
+
+• Command Re-execution
+
+• Recovery Evaluation
+
+Unlike SELF-DEBUGGING, my research evaluates:
+
+• Recovery Success Rate
+
+• Recovery Time
+
+• Number of Recovery Attempts
+
+• Token Cost
+
+• Recovery Efficiency
+
+• Failure Recovery Rate
+
+Therefore,
+
+SELF-DEBUGGING becomes one important component inside my larger autonomous recovery framework.
+
+---
+
+# Key Takeaway
+
+SELF-DEBUGGING proves that Large Language Models can automatically inspect, explain, debug, and repair their own generated code using execution feedback and self-explanation.
+
+This paper provides one of the strongest foundations for building autonomous failure recovery systems for Agentic AI Coding Systems.

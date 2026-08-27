@@ -1,0 +1,19 @@
+--- a/astropy/modeling/separable.py
++++ b/astropy/modeling/separable.py
+@@ -282,13 +282,10 @@ def _operators():
+ 
+ 
+ def _coord_matrix(transform, pos, cut):
+-    if isinstance(transform, CompoundModel):
+-        return _compound(transform, pos, cut)
+-    else:
+-        result = _separable(transform)
+-        if pos == 'left':
+-            return np.hstack((result, np.zeros((result.shape[0], cut))))
+-        elif pos == 'right':
+-            return np.hstack((np.zeros((result.shape[0], cut)), result))
++    result = _separable(transform)
++    if pos == 'left':
++        return np.hstack((result, np.zeros((result.shape[0], cut))))
++    elif pos == 'right':
++        return np.hstack((np.zeros((result.shape[0], cut)), result))

@@ -1,0 +1,22 @@
+[
+  {
+    "instance_id": "astropy__astropy-12907",
+    "model_patch": "--- a/astropy/modeling/separable.py\n+++ b/astropy/modeling/separable.py\n@@ -239,7 +239,7 @@ def _cstack(left, right):\n     if isinstance(right, Model):\n         cright = _coord_matrix(right, 'right', noutp)\n     else:\n         cright = np.zeros((noutp, right.shape[1]))\n-        cright[-right.shape[0]:, -right.shape[1]:] = 1\n+        cright[-right.shape[0]:, -right.shape[1]:] = right\n\n     return np.hstack([cleft, cright])\n",
+    "model_name_or_path": "gemini-3.6-flash-blindretry-attempt1"
+  },
+  {
+    "instance_id": "astropy__astropy-14365",
+    "model_patch": "valid unified diff\n--- a/astropy/io/ascii/qdp.py\n+++ b/astropy/io/ascii/qdp.py\n@@ -26,6 +26,8 @@\n     Examples\n     --------\n     >>> _line_type(\"READ SERR 3\")\n     'command'\n+    >>> _line_type(\"read serr 3\")\n+    'command'\n     >>> _line_type(\" \\n    !some gibberish\")\n     'comment'\n@@ -58,7 +60,7 @@\n     _new_re = rf\"NO({sep}NO)+\"\n     _data_re = rf\"({_decimal_re}|NO|[-+]?nan)({sep}({_decimal_re}|NO|[-+]?nan))*)\"\n     _type_re = rf\"^\\s*((?P<command>{_command_re})|(?P<new>{_new_re})|(?P<data>{_data_re})?\\s*(\\!(?P<comment>.*))?\\s*$\"\n-    _line_type_re = re.compile(_type_re)\n+    _line_type_re = re.compile(_type_re, re.IGNORECASE)\n     line = line.strip()\n     if not line:\n         return \"comment\"\n@@ -236,20 +238,21 @@\n         if datatype.startswith(\"data\"):\n             # The first time I find data, I define err_specs\n             if err_specs == {} and command_lines != \"\":\n                 for cline in command_lines.strip().split(\"\\n\"):\n-                    command = cline.strip().split()\n+                    cline = cline.split(\"!\")[0].strip()\n+                    command = cline.split()\n                     # This should never happen, but just in case.\n                     if len(command) < 3:\n                         continue\n                     err_specs[command[1].lower()] = [int(c) for c in command[2:]]\n             if colnames is None:\n                 colnames = _interpret_err_lines(err_specs, ncol, names=input_colnames)\n\n             if current_rows is None:\n                 current_rows = []\n\n             values = []\n             for v in line.split(delimiter):\n-                if v == \"NO\":\n+                if v.upper() == \"NO\":\n                     values.append(np.ma.masked)\n                 else:\n                     # Understand if number is int or float\n",
+    "model_name_or_path": "gemini-3.6-flash-blindretry-attempt1"
+  },
+  {
+    "instance_id": "astropy__astropy-14995",
+    "model_patch": "--- a/astropy/nddata/mixins/ndarithmetic.py\n+++ b/astropy/nddata/mixins/ndarithmetic.py\n@@ -370,17 +370,17 @@\n             If neither had a mask ``None`` is returned. Otherwise\n             ``handle_mask`` must create (and copy) the returned mask.\n         \"\"\"\n         # If only one mask is present we need not bother about any type checks\n         if (\n-            self.mask is None and operand is not None and operand.mask is None\n+            self.mask is None and (operand is None or operand.mask is None)\n         ) or handle_mask is None:\n             return None\n-        elif self.mask is None and operand is not None:\n+        elif self.mask is None:\n             # Make a copy so there is no reference in the result.\n             return deepcopy(operand.mask)\n-        elif operand is None:\n+        elif operand is None or operand.mask is None:\n             return deepcopy(self.mask)\n         else:\n             # Now lets calculate the resulting mask (operation enforces copy)\n             return handle_mask(self.mask, operand.mask, **kwds)\n",
+    "model_name_or_path": "gemini-3.6-flash-blindretry-attempt1"
+  },
+  {
+    "instance_id": "astropy__astropy-6938",
+    "model_patch": "--- a/astropy/io/fits/fitsrec.py\n+++ b/astropy/io/fits/fitsrec.py\n@@ -983,7 +983,7 @@\n \n         # Replace exponent separator in floating point numbers\n         if 'D' in format:\n-            output_field.replace(encode_ascii('E'), encode_ascii('D'))\n+            output_field[:] = output_field.replace(encode_ascii('E'), encode_ascii('D'))\n \n \n def _get_recarray_field(array, key):\n",
+    "model_name_or_path": "gemini-3.6-flash-blindretry-attempt1"
+  }
+]

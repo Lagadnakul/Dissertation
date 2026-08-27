@@ -1,0 +1,34 @@
+2026-08-26 08:31:37,954 - INFO - Image not found locally, attempting to pull...
+2026-08-26 08:37:03,458 - INFO - Creating container for astropy__astropy-12907...
+2026-08-26 08:37:06,134 - INFO - Container for astropy__astropy-12907 created: f04106686c642da6dd0e4db77963e989584ae9051b203ae21a8901b96388bdbc
+2026-08-26 08:37:19,612 - INFO - Container for astropy__astropy-12907 started: f04106686c642da6dd0e4db77963e989584ae9051b203ae21a8901b96388bdbc
+2026-08-26 08:37:20,104 - INFO - Intermediate patch for astropy__astropy-12907 written to logs\run_evaluation\day4_test\gemini-3.6-flash-attempt1\astropy__astropy-12907\patch.diff, now applying to container...
+2026-08-26 08:37:26,936 - INFO - Failed to apply patch to container: git apply --verbose
+2026-08-26 08:37:32,770 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-08-26 08:37:33,352 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-08-26 08:37:34,202 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-08-26 08:37:34,469 - INFO - >>>>> Patch Apply Failed:
+(Stripping trailing CRs from patch; use --binary to disable.)
+patching file astropy/modeling/separable.py
+patch unexpectedly ends in middle of line
+patch: **** malformed patch at line 18:  
+
+
+2026-08-26 08:37:35,155 - INFO - Traceback (most recent call last):
+  File "C:\Users\CHAITANYA\AppData\Local\Programs\Python\Python313\Lib\site-packages\swebench\harness\run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for astropy__astropy-12907: >>>>> Patch Apply Failed:
+(Stripping trailing CRs from patch; use --binary to disable.)
+patching file astropy/modeling/separable.py
+patch unexpectedly ends in middle of line
+patch: **** malformed patch at line 18:  
+
+
+Check (logs\run_evaluation\day4_test\gemini-3.6-flash-attempt1\astropy__astropy-12907\run_instance.log) for more information.
+
+2026-08-26 08:37:35,161 - INFO - Attempting to stop container sweb.eval.astropy__astropy-12907.day4_test...
+2026-08-26 08:37:51,453 - INFO - Container sweb.eval.astropy__astropy-12907.day4_test stopped successfully.
+2026-08-26 08:37:51,453 - INFO - Attempting to remove container sweb.eval.astropy__astropy-12907.day4_test...
+2026-08-26 08:37:51,708 - INFO - Container sweb.eval.astropy__astropy-12907.day4_test removed successfully.
