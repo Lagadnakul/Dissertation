@@ -1,0 +1,25 @@
+2026-08-28 05:53:09,824 - INFO - Creating container for django__django-11583...
+2026-08-28 05:53:10,013 - INFO - Container for django__django-11583 created: 8b9bd1fbcaa1a274c74d477c663917be14bd7d66b69dfbd14b566345a770030b
+2026-08-28 05:53:10,476 - INFO - Container for django__django-11583 started: 8b9bd1fbcaa1a274c74d477c663917be14bd7d66b69dfbd14b566345a770030b
+2026-08-28 05:53:10,486 - INFO - Intermediate patch for django__django-11583 written to logs/run_evaluation/day7_test2/gemini-3.6-flash-blindretry-attempt1/django__django-11583/patch.diff, now applying to container...
+2026-08-28 05:53:11,024 - INFO - Failed to apply patch to container: git apply --verbose
+2026-08-28 05:53:16,339 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-08-28 05:53:16,844 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-08-28 05:53:17,262 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-08-28 05:53:17,375 - INFO - >>>>> Patch Apply Failed:
+patch: **** Only garbage was found in the patch input.
+
+2026-08-28 05:53:17,377 - INFO - Traceback (most recent call last):
+  File "/home/chaitanya/research-venv/lib/python3.14/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for django__django-11583: >>>>> Patch Apply Failed:
+patch: **** Only garbage was found in the patch input.
+
+Check (logs/run_evaluation/day7_test2/gemini-3.6-flash-blindretry-attempt1/django__django-11583/run_instance.log) for more information.
+
+2026-08-28 05:53:17,377 - INFO - Attempting to stop container sweb.eval.django__django-11583.day7_test2...
+2026-08-28 05:53:32,822 - INFO - Container sweb.eval.django__django-11583.day7_test2 stopped successfully.
+2026-08-28 05:53:32,823 - INFO - Attempting to remove container sweb.eval.django__django-11583.day7_test2...
+2026-08-28 05:53:33,126 - INFO - Container sweb.eval.django__django-11583.day7_test2 removed successfully.

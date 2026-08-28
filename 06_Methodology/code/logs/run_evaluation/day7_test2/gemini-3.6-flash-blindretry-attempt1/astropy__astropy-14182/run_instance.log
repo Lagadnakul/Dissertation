@@ -1,0 +1,29 @@
+2026-08-28 05:46:20,990 - INFO - Creating container for astropy__astropy-14182...
+2026-08-28 05:46:24,232 - INFO - Container for astropy__astropy-14182 created: 97e392f8d0db40f3e0cb9aae4219d3b64a980adc8001d3dad614ed77d7144323
+2026-08-28 05:46:32,331 - INFO - Container for astropy__astropy-14182 started: 97e392f8d0db40f3e0cb9aae4219d3b64a980adc8001d3dad614ed77d7144323
+2026-08-28 05:46:32,455 - INFO - Intermediate patch for astropy__astropy-14182 written to logs/run_evaluation/day7_test2/gemini-3.6-flash-blindretry-attempt1/astropy__astropy-14182/patch.diff, now applying to container...
+2026-08-28 05:46:36,147 - INFO - Failed to apply patch to container: git apply --verbose
+2026-08-28 05:46:55,836 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-08-28 05:46:56,657 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-08-28 05:46:58,237 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-08-28 05:46:59,387 - INFO - >>>>> Patch Apply Failed:
+patching file astropy/io/ascii/rst.py
+patch: **** malformed patch at line 14: -        lines = [lines[1]] + lines + [lines[1]]
+
+
+2026-08-28 05:46:59,392 - INFO - Traceback (most recent call last):
+  File "/home/chaitanya/research-venv/lib/python3.14/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for astropy__astropy-14182: >>>>> Patch Apply Failed:
+patching file astropy/io/ascii/rst.py
+patch: **** malformed patch at line 14: -        lines = [lines[1]] + lines + [lines[1]]
+
+
+Check (logs/run_evaluation/day7_test2/gemini-3.6-flash-blindretry-attempt1/astropy__astropy-14182/run_instance.log) for more information.
+
+2026-08-28 05:46:59,393 - INFO - Attempting to stop container sweb.eval.astropy__astropy-14182.day7_test2...
+2026-08-28 05:47:18,554 - INFO - Container sweb.eval.astropy__astropy-14182.day7_test2 stopped successfully.
+2026-08-28 05:47:18,555 - INFO - Attempting to remove container sweb.eval.astropy__astropy-14182.day7_test2...
+2026-08-28 05:47:19,109 - INFO - Container sweb.eval.astropy__astropy-14182.day7_test2 removed successfully.

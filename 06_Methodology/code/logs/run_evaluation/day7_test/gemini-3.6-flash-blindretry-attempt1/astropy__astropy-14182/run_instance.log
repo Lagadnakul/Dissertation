@@ -1,0 +1,32 @@
+2026-08-28 04:23:16,394 - INFO - Image not found locally, attempting to pull...
+2026-08-28 04:24:36,275 - INFO - Creating container for astropy__astropy-14182...
+2026-08-28 04:24:37,310 - INFO - Container for astropy__astropy-14182 created: 1038bcac2ff5455990a31cde3ae5b9a9a1023d3d787d35de495c9c7f6e3ca914
+2026-08-28 04:24:38,136 - INFO - Container for astropy__astropy-14182 started: 1038bcac2ff5455990a31cde3ae5b9a9a1023d3d787d35de495c9c7f6e3ca914
+2026-08-28 04:24:38,395 - INFO - Intermediate patch for astropy__astropy-14182 written to logs/run_evaluation/day7_test/gemini-3.6-flash-blindretry-attempt1/astropy__astropy-14182/patch.diff, now applying to container...
+2026-08-28 04:24:39,098 - INFO - Failed to apply patch to container: git apply --verbose
+2026-08-28 04:24:43,733 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-08-28 04:24:45,027 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-08-28 04:24:46,582 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-08-28 04:24:46,926 - INFO - >>>>> Patch Apply Failed:
+patch: **** malformed patch at line 14: -        lines = [lines[1]] + lines + [lines[1]]
+
+patching file astropy/io/ascii/rst.py
+
+2026-08-28 04:24:47,000 - INFO - Traceback (most recent call last):
+  File "/home/chaitanya/research-venv/lib/python3.14/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for astropy__astropy-14182: >>>>> Patch Apply Failed:
+patch: **** malformed patch at line 14: -        lines = [lines[1]] + lines + [lines[1]]
+
+patching file astropy/io/ascii/rst.py
+
+Check (logs/run_evaluation/day7_test/gemini-3.6-flash-blindretry-attempt1/astropy__astropy-14182/run_instance.log) for more information.
+
+2026-08-28 04:24:47,017 - INFO - Attempting to stop container sweb.eval.astropy__astropy-14182.day7_test...
+2026-08-28 04:25:17,086 - INFO - Failed to stop container sweb.eval.astropy__astropy-14182.day7_test: Command '['docker', 'stop', '--time=15', '1038bcac2ff5455990a31cde3ae5b9a9a1023d3d787d35de495c9c7f6e3ca914']' timed out after 30 seconds. Trying to forcefully kill...
+2026-08-28 04:25:17,181 - INFO - Forcefully killing container sweb.eval.astropy__astropy-14182.day7_test...
+2026-08-28 04:25:21,890 - INFO - Container sweb.eval.astropy__astropy-14182.day7_test killed successfully.
+2026-08-28 04:25:21,892 - INFO - Attempting to remove container sweb.eval.astropy__astropy-14182.day7_test...
+2026-08-28 04:25:23,094 - INFO - Container sweb.eval.astropy__astropy-14182.day7_test removed successfully.

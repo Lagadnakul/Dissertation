@@ -1,0 +1,26 @@
+2026-08-28 04:40:21,960 - INFO - Image not found locally, attempting to pull...
+2026-08-28 04:50:47,942 - INFO - Creating container for django__django-11583...
+2026-08-28 04:50:49,792 - INFO - Container for django__django-11583 created: b64e72684b42833859686dda010dda4e9dcfca3fdfdf8a645350b6a31f699566
+2026-08-28 04:50:51,072 - INFO - Container for django__django-11583 started: b64e72684b42833859686dda010dda4e9dcfca3fdfdf8a645350b6a31f699566
+2026-08-28 04:50:51,343 - INFO - Intermediate patch for django__django-11583 written to logs/run_evaluation/day7_test/gemini-3.6-flash-blindretry-attempt1/django__django-11583/patch.diff, now applying to container...
+2026-08-28 04:50:53,306 - INFO - Failed to apply patch to container: git apply --verbose
+2026-08-28 04:51:00,804 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-08-28 04:51:01,911 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-08-28 04:51:03,129 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-08-28 04:51:03,462 - INFO - >>>>> Patch Apply Failed:
+patch: **** Only garbage was found in the patch input.
+
+2026-08-28 04:51:03,600 - INFO - Traceback (most recent call last):
+  File "/home/chaitanya/research-venv/lib/python3.14/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for django__django-11583: >>>>> Patch Apply Failed:
+patch: **** Only garbage was found in the patch input.
+
+Check (logs/run_evaluation/day7_test/gemini-3.6-flash-blindretry-attempt1/django__django-11583/run_instance.log) for more information.
+
+2026-08-28 04:51:03,669 - INFO - Attempting to stop container sweb.eval.django__django-11583.day7_test...
+2026-08-28 04:51:22,997 - INFO - Container sweb.eval.django__django-11583.day7_test stopped successfully.
+2026-08-28 04:51:22,999 - INFO - Attempting to remove container sweb.eval.django__django-11583.day7_test...
+2026-08-28 04:51:23,445 - INFO - Container sweb.eval.django__django-11583.day7_test removed successfully.
