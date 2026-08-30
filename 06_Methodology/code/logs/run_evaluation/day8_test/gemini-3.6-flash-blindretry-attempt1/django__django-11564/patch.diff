@@ -1,0 +1,14 @@
+--- a/django/conf/__init__.py
++++ b/django/conf/__init__.py
+@@ -153,6 +153,11 @@ class Settings:
+             setattr(self, 'PASSWORD_RESET_TIMEOUT', self.PASSWORD_RESET_TIMEOUT_DAYS * 60 * 60 * 24)
+             warnings.warn(PASSWORD_RESET_TIMEOUT_DAYS_DEPRECATED_MSG, RemovedInDjango40Warning)
+
++        if self.STATIC_URL and not self.STATIC_URL.endswith('/'):
++            raise ImproperlyConfigured("The STATIC_URL setting must end with a slash if set.")
++        if self.MEDIA_URL and not self.MEDIA_URL.endswith('/'):
++            raise ImproperlyConfigured("The MEDIA_URL setting must end with a slash if set.")
++
+         if hasattr(time, 'tzset') and self.TIME_ZONE:
+             # When we can, attempt to validate the timezone. If we can't find
+             # this file, no check happens and it's harmless.

@@ -25,6 +25,11 @@
     "model_name_or_path": "gemini-3.6-flash-blindretry-attempt1"
   },
   {
+    "instance_id": "astropy__astropy-7746",
+    "model_patch": "--- a/astropy/wcs/wcs.py\n+++ b/astropy/wcs/wcs.py\n@@ -700,4 +700,7 @@\n         # initial approximation (linear WCS based only)\n         pix0 = self.wcs_world2pix(world, origin)\n\n+        if pix0.size == 0:\n+            return pix0\n+\n         # Check that an iterative solution is required at all\n@@ -1222,21 +1225,29 @@\n             if ra_dec_order and sky == 'input':\n                 xy = self._denormalize_sky(xy)\n-            output = func(xy, origin)\n+            if xy.size == 0:\n+                output = np.zeros((0, self.naxis))\n+            else:\n+                output = func(xy, origin)\n             if ra_dec_order and sky == 'output':\n                 output = self._normalize_sky(output)\n                 return (output[:, 0].reshape(axes[0].shape),\n                         output[:, 1].reshape(axes[0].shape))\n             return [output[:, i].reshape(axes[0].shape)\n                     for i in range(output.shape[1])]\n\n         def _return_single_array(xy, origin):\n+            if xy.size == 0 and xy.ndim == 1:\n+                xy = xy.reshape((0, self.naxis))\n             if xy.shape[-1] != self.naxis:\n                 raise ValueError(\n                     \"When providing two arguments, the array must be \"\n                     \"of shape (N, {0})\".format(self.naxis))\n             if ra_dec_order and sky == 'input':\n                 xy = self._denormalize_sky(xy)\n-            result = func(xy, origin)\n+            if xy.size == 0:\n+                result = np.zeros(xy.shape)\n+            else:\n+                result = func(xy, origin)\n             if ra_dec_order and sky == 'output':\n                 result = self._normalize_sky(result)\n             return result\n",
+    "model_name_or_path": "gemini-3.6-flash-blindretry-attempt1"
+  },
+  {
     "instance_id": "django__django-10914",
     "model_patch": "--- a/django/conf/global_settings.py\n+++ b/django/conf/global_settings.py\n@@ -253,7 +253,7 @@ FILE_UPLOAD_TEMP_DIR = None\n\n # The numeric mode to set newly-uploaded files to. The value should be a mode\n # you'd pass directly to os.chmod; see https://docs.python.org/library/os.html#files-and-directories.\n-FILE_UPLOAD_PERMISSIONS = None\n+FILE_UPLOAD_PERMISSIONS = 0o644\n\n # The numeric mode to assign to newly-created directories, when uploading files.\n # The value should be a mode as you'd pass to os.chmod;\n",
     "model_name_or_path": "gemini-3.6-flash-blindretry-attempt1"
@@ -55,6 +60,11 @@
     "model_name_or_path": "gemini-3.6-flash-blindretry-attempt1"
   },
   {
+    "instance_id": "django__django-11099",
+    "model_patch": "--- a/django/contrib/auth/validators.py\n+++ b/django/contrib/auth/validators.py\n@@ -8,18 +8,18 @@\n @deconstructible\n class ASCIIUsernameValidator(validators.RegexValidator):\n-    regex = r'^[\\w.@+-]+$'\n+    regex = r'^[\\w.@+-]+\\Z'\n     message = _(\n         'Enter a valid username. This value may contain only English letters, '\n         'numbers, and @/./+/-/_ characters.'\n     )\n     flags = re.ASCII\n\n\n @deconstructible\n class UnicodeUsernameValidator(validators.RegexValidator):\n-    regex = r'^[\\w.@+-]+$'\n+    regex = r'^[\\w.@+-]+\\Z'\n     message = _(\n         'Enter a valid username. This value may contain only letters, '\n         'numbers, and @/./+/-/_ characters.'\n     )\n     flags = 0\n",
+    "model_name_or_path": "gemini-3.6-flash-blindretry-attempt1"
+  },
+  {
     "instance_id": "django__django-11133",
     "model_patch": "--- a/django/http/response.py\n+++ b/django/http/response.py\n@@ -222,7 +222,7 @@\n         # Handle string types -- we can't rely on force_bytes here because:\n         # - Python attempts str conversion first\n         # - when self._charset != 'utf-8' it re-encodes the content\n-        if isinstance(value, bytes):\n+        if isinstance(value, (bytes, memoryview)):\n             return bytes(value)\n         if isinstance(value, str):\n             return bytes(value.encode(self.charset))\n@@ -324,7 +324,7 @@\n     @content.setter\n     def content(self, value):\n         # Consume iterators upon assignment to allow repeated iteration.\n-        if hasattr(value, '__iter__') and not isinstance(value, (bytes, str)):\n+        if hasattr(value, '__iter__') and not isinstance(value, (bytes, str, memoryview)):\n             content = b''.join(self.make_bytes(chunk) for chunk in value)\n             if hasattr(value, 'close'):\n                 try:\n",
     "model_name_or_path": "gemini-3.6-flash-blindretry-attempt1"
@@ -65,8 +75,28 @@
     "model_name_or_path": "gemini-3.6-flash-blindretry-attempt1"
   },
   {
+    "instance_id": "django__django-11283",
+    "model_patch": "--- a/django/contrib/auth/migrations/0011_update_proxy_permissions.py\n+++ b/django/contrib/auth/migrations/0011_update_proxy_permissions.py\n@@ -22,7 +22,13 @@\n         proxy_content_type = ContentType.objects.get_for_model(Model, for_concrete_model=False)\n         old_content_type = proxy_content_type if reverse else concrete_content_type\n         new_content_type = concrete_content_type if reverse else proxy_content_type\n+        existing_permissions_codenames = Permission.objects.filter(\n+            permissions_query,\n+            content_type=new_content_type,\n+        ).values_list('codename', flat=True)\n         Permission.objects.filter(\n             permissions_query,\n             content_type=old_content_type,\n+        ).exclude(\n+            codename__in=existing_permissions_codenames,\n         ).update(content_type=new_content_type)\n\n\ndef revert_proxy_model_permissions(apps, schema_editor):\n",
+    "model_name_or_path": "gemini-3.6-flash-blindretry-attempt1"
+  },
+  {
+    "instance_id": "django__django-11422",
+    "model_patch": "--- a/django/utils/autoreload.py\n+++ b/django/utils/autoreload.py\n@@ -109,9 +109,13 @@\n     for module in modules:\n         # During debugging (with PyDev) the 'typing.io' and 'typing.re' objects\n         # are added to sys.modules, however they are types not modules and so\n         # cause issues here.\n-        if not isinstance(module, ModuleType) or getattr(module, '__spec__', None) is None:\n+        if not isinstance(module, ModuleType):\n+            continue\n+        if getattr(module, '__spec__', None) is None:\n+            if getattr(module, '__file__', None):\n+                sys_file_paths.append(module.__file__)\n             continue\n         spec = module.__spec__\n         # Modules could be loaded from places without a concrete location. If\n         # this is the case, skip them.\n",
+    "model_name_or_path": "gemini-3.6-flash-blindretry-attempt1"
+  },
+  {
+    "instance_id": "django__django-11564",
+    "model_patch": "--- a/django/conf/__init__.py\n+++ b/django/conf/__init__.py\n@@ -153,6 +153,11 @@ class Settings:\n             setattr(self, 'PASSWORD_RESET_TIMEOUT', self.PASSWORD_RESET_TIMEOUT_DAYS * 60 * 60 * 24)\n             warnings.warn(PASSWORD_RESET_TIMEOUT_DAYS_DEPRECATED_MSG, RemovedInDjango40Warning)\n\n+        if self.STATIC_URL and not self.STATIC_URL.endswith('/'):\n+            raise ImproperlyConfigured(\"The STATIC_URL setting must end with a slash if set.\")\n+        if self.MEDIA_URL and not self.MEDIA_URL.endswith('/'):\n+            raise ImproperlyConfigured(\"The MEDIA_URL setting must end with a slash if set.\")\n+\n         if hasattr(time, 'tzset') and self.TIME_ZONE:\n             # When we can, attempt to validate the timezone. If we can't find\n             # this file, no check happens and it's harmless.\n",
+    "model_name_or_path": "gemini-3.6-flash-blindretry-attempt1"
+  },
+  {
     "instance_id": "django__django-11583",
     "model_patch": "@@ -127,7 +127,7 @@\n         path = Path(filename)\n         try:\n             resolved_path = path.resolve(strict=True).absolute()\n-        except FileNotFoundError:\n+        except (FileNotFoundError, ValueError):\n             # The module could have been removed, don't fail loudly if this\n             # is the case.\n             continue\n@@ -174,7 +174,7 @@\n     for path in sys.path:\n         path = Path(path)\n         try:\n             resolved_path = path.resolve(strict=True).absolute()\n-        except FileNotFoundError:\n+        except (FileNotFoundError, ValueError):\n             continue\n         # If the path is a file (like a zip file), watch the parent directory.\n         if resolved_path.is_file():\n",
+    "model_name_or_path": "gemini-3.6-flash-blindretry-attempt1"
+  },
+  {
+    "instance_id": "django__django-11620",
+    "model_patch": "@@ -7,6 +7,6 @@\n from django.conf import settings\n-from django.http import HttpResponse, HttpResponseNotFound\n+from django.http import Http404, HttpResponse, HttpResponseNotFound\n from django.template import Context, Engine, TemplateDoesNotExist\n from django.template.defaultfilters import pprint\n-from django.urls import Resolver404, resolve\n+from django.urls import resolve\n from django.utils import timezone\n@@ -481,7 +481,7 @@\n     caller = ''\n     try:\n         resolver_match = resolve(request.path)\n-    except Resolver404:\n+    except Http404:\n         pass\n     else:\n         obj = resolver_match.func\n",
     "model_name_or_path": "gemini-3.6-flash-blindretry-attempt1"
   }
 ]

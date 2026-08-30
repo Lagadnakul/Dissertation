@@ -1,0 +1,86 @@
+{
+  "astropy__astropy-12907": {
+    "baseline": "PASS"
+  },
+  "astropy__astropy-14365": {
+    "baseline": "PASS"
+  },
+  "astropy__astropy-14995": {
+    "baseline": "PASS"
+  },
+  "astropy__astropy-6938": {
+    "baseline": "PASS"
+  },
+  "django__django-10914": {
+    "baseline": "PASS"
+  },
+  "django__django-10924": {
+    "baseline": "PASS"
+  },
+  "django__django-11001": {
+    "baseline": "PASS"
+  },
+  "django__django-11049": {
+    "baseline": "PASS"
+  },
+  "django__django-11099": {
+    "baseline": "PASS"
+  },
+  "django__django-11133": {
+    "baseline": "PASS"
+  },
+  "django__django-11179": {
+    "baseline": "PASS"
+  },
+  "django__django-11422": {
+    "baseline": "PASS"
+  },
+  "astropy__astropy-7746": {
+    "baseline": "FAIL",
+    "blind_retry": "FAIL",
+    "reflection_only": "FAIL",
+    "diagnose_revise": "FAIL"
+  },
+  "django__django-11019": {
+    "baseline": "FAIL",
+    "blind_retry": "FAIL",
+    "reflection_only": "FAIL",
+    "diagnose_revise": "FAIL"
+  },
+  "django__django-11283": {
+    "baseline": "FAIL",
+    "blind_retry": "FAIL",
+    "reflection_only": "FAIL",
+    "diagnose_revise": "FAIL"
+  },
+  "django__django-11564": {
+    "baseline": "FAIL",
+    "blind_retry": "FAIL",
+    "reflection_only": "FAIL",
+    "diagnose_revise": "FAIL"
+  },
+  "astropy__astropy-14182": {
+    "baseline": "ERROR (malformed)",
+    "blind_retry": "EXCLUDED (permanently blocked - RECITATION)",
+    "reflection_only": "EXCLUDED (permanently blocked - RECITATION)",
+    "diagnose_revise": "EXCLUDED (permanently blocked - RECITATION)"
+  },
+  "django__django-11039": {
+    "baseline": "ERROR (malformed)",
+    "blind_retry": "PASS (old tooling, not retrofitted)",
+    "reflection_only": "NOT_TESTED (already resolved, skipped to save quota)",
+    "diagnose_revise": "NOT_TESTED (already resolved, skipped to save quota)"
+  },
+  "django__django-11583": {
+    "baseline": "ERROR (malformed)",
+    "blind_retry": "PASS (old tooling, not retrofitted)",
+    "reflection_only": "NOT_TESTED (already resolved, skipped to save quota)",
+    "diagnose_revise": "NOT_TESTED (already resolved, skipped to save quota)"
+  },
+  "django__django-11620": {
+    "baseline": "ERROR (malformed)",
+    "blind_retry": "PASS (retrofitted, verified)",
+    "reflection_only": "PASS (retrofitted, verified)",
+    "diagnose_revise": "PASS (retrofitted, verified)"
+  }
+}

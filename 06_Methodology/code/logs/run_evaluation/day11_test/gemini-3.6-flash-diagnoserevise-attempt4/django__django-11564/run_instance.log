@@ -1,0 +1,29 @@
+2026-08-29 10:11:17,807 - INFO - Creating container for django__django-11564...
+2026-08-29 10:11:18,261 - INFO - Container for django__django-11564 created: b5b7dae47ef7d7f26c293417745c4b7d0aafca885f6128d1a13b78879c57a870
+2026-08-29 10:11:19,565 - INFO - Container for django__django-11564 started: b5b7dae47ef7d7f26c293417745c4b7d0aafca885f6128d1a13b78879c57a870
+2026-08-29 10:11:19,572 - INFO - Intermediate patch for django__django-11564 written to logs/run_evaluation/day11_test/gemini-3.6-flash-diagnoserevise-attempt4/django__django-11564/patch.diff, now applying to container...
+2026-08-29 10:11:20,983 - INFO - Failed to apply patch to container: git apply --verbose
+2026-08-29 10:11:30,046 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-08-29 10:11:30,671 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-08-29 10:11:31,318 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-08-29 10:11:31,492 - INFO - >>>>> Patch Apply Failed:
+patching file django/conf/__init__.py
+patch: **** malformed patch at line 24:  class SettingsReference(str):
+
+
+2026-08-29 10:11:31,494 - INFO - Traceback (most recent call last):
+  File "/home/chaitanya/research-venv/lib/python3.14/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for django__django-11564: >>>>> Patch Apply Failed:
+patching file django/conf/__init__.py
+patch: **** malformed patch at line 24:  class SettingsReference(str):
+
+
+Check (logs/run_evaluation/day11_test/gemini-3.6-flash-diagnoserevise-attempt4/django__django-11564/run_instance.log) for more information.
+
+2026-08-29 10:11:31,494 - INFO - Attempting to stop container sweb.eval.django__django-11564.day11_test...
+2026-08-29 10:11:48,196 - INFO - Container sweb.eval.django__django-11564.day11_test stopped successfully.
+2026-08-29 10:11:48,198 - INFO - Attempting to remove container sweb.eval.django__django-11564.day11_test...
+2026-08-29 10:11:48,664 - INFO - Container sweb.eval.django__django-11564.day11_test removed successfully.

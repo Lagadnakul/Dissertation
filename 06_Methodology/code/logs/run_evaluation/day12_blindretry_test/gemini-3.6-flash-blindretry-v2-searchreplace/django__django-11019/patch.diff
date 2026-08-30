@@ -1,0 +1,128 @@
+--- a/django/forms/widgets.py
++++ b/django/forms/widgets.py
+@@ -59,22 +59,14 @@
+ 
+     @property
+     def _css(self):
+-        css = self._css_lists[0]
+-        # filter(None, ...) avoids calling merge with empty dicts.
+-        for obj in filter(None, self._css_lists[1:]):
+-            css = {
+-                medium: self.merge(css.get(medium, []), obj.get(medium, []))
+-                for medium in css.keys() | obj.keys()
+-            }
++        css = {}
++        for medium in {medium for obj in self._css_lists for medium in obj}:
++            css[medium] = self.merge(*(obj.get(medium, []) for obj in self._css_lists))
+         return css
+ 
+     @property
+     def _js(self):
+-        js = self._js_lists[0]
+-        # filter(None, ...) avoids calling merge() with empty lists.
+-        for obj in filter(None, self._js_lists[1:]):
+-            js = self.merge(js, obj)
+-        return js
++        return self.merge(*self._js_lists)
+ 
+     def render(self):
+         return mark_safe('\n'.join(chain.from_iterable(getattr(self, 'render_' + name)() for name in MEDIA_TYPES)))
+@@ -115,9 +107,9 @@
+         raise KeyError('Unknown media type "%s"' % name)
+ 
+     @staticmethod
+-    def merge(list_1, list_2):
+-        """
+-        Merge two lists while trying to keep the relative order of the elements.
++    def merge(*lists):
++        """
++        Merge lists while trying to keep the relative order of the elements.
+         Warn if the lists have the same two elements in a different relative
+         order.
+ 
+@@ -125,29 +117,63 @@
+         in a certain order. In JavaScript you may not be able to reference a
+         global or in CSS you might want to override a style.
+         """
+-        # Start with a copy of list_1.
+-        combined_list = list(list_1)
+-        last_insert_index = len(list_1)
+-        # Walk list_2 in reverse, inserting each element into combined_list if
+-        # it doesn't already exist.
+-        for path in reversed(list_2):
+-            try:
+-                # Does path already exist in the list?
+-                index = combined_list.index(path)
+-            except ValueError:
+-                # Add path to combined_list since it doesn't exist.
+-                combined_list.insert(last_insert_index, path)
++        head_list = []
++        seen = set()
++        for list_ in lists:
++            for item in list_:
++                if item not in seen:
++                    seen.add(item)
++                    head_list.append(item)
++
++        # Build graph of dependencies
++        graph = {item: set() for item in head_list}
++        in_degree = {item: 0 for item in head_list}
++
++        for list_ in lists:
++            # Deduplicate list_ while preserving order
++            cleaned_list = []
++            list_seen = set()
++            for item in list_:
++                if item not in list_seen:
++                    list_seen.add(item)
++                    cleaned_list.append(item)
++
++            for i in range(len(cleaned_list) - 1):
++                u, v = cleaned_list[i], cleaned_list[i + 1]
++                if v not in graph[u]:
++                    graph[u].add(v)
++                    in_degree[v] += 1
++
++        result = []
++        result_set = set()
++        while len(result) < len(head_list):
++            # Find nodes with in_degree 0 among unvisited nodes
++            candidates = [
++                item for item in head_list
++                if item not in result_set and in_degree[item] == 0
++            ]
++            if candidates:
++                # Pick the candidate that appeared earliest
++                node = candidates[0]
+             else:
+-                if index > last_insert_index:
+-                    warnings.warn(
+-                        'Detected duplicate Media files in an opposite order:\n'
+-                        '%s\n%s' % (combined_list[last_insert_index], combined_list[index]),
+-                        MediaOrderConflictWarning,
+-                    )
+-                # path already exists in the list. Update last_insert_index so
+-                # that the following elements are inserted in front of this one.
+-                last_insert_index = index
+-        return combined_list
++                # Cycle detected! Pick unvisited node with earliest appearance
++                unvisited = [item for item in head_list if item not in result_set]
++                node = unvisited[0]
++                for v in unvisited:
++                    if node in graph[v]:
++                        warnings.warn(
++                            'Detected duplicate Media files in an opposite order:\n'
++                            '%s\n%s' % (v, node),
++                            MediaOrderConflictWarning,
++                        )
++                        break
++
++            result.append(node)
++            result_set.add(node)
++            for neighbor in graph[node]:
++                in_degree[neighbor] -= 1
++
++        return result
+ 
+     def __add__(self, other):
+         combined = Media()

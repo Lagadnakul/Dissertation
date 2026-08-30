@@ -1,0 +1,13 @@
+@@ -79,7 +79,12 @@ class LazySettings(LazyObject):
+     def __getattr__(self, name):
+         """Return the value of a setting and cache it in self.__dict__."""
+         if self._wrapped is empty:
+             self._setup(name)
+         val = getattr(self._wrapped, name)
++        if name in ('STATIC_URL', 'MEDIA_URL') and isinstance(val, str) and val.startswith('/') and not val.startswith('//'):
++            script_name = os.environ.get('SCRIPT_NAME', '')
++            if script_name:
++                return script_name.rstrip('/') + val
++            return val
+         self.__dict__[name] = val
+         return val

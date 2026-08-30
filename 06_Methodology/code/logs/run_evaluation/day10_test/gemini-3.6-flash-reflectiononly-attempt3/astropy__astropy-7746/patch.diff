@@ -1,0 +1,34 @@
+--- a/astropy/wcs/wcs.py
++++ b/astropy/wcs/wcs.py
+@@ -1223,13 +1223,18 @@
+             if ra_dec_order and sky == 'input':
+                 xy = self._denormalize_sky(xy)
+-            output = func(xy, origin)
++            if xy.size == 0:
++                output = np.zeros(xy.shape)
++            else:
++                output = func(xy, origin)
+             if ra_dec_order and sky == 'output':
+                 output = self._normalize_sky(output)
+                 return (output[:, 0].reshape(axes[0].shape),
+                         output[:, 1].reshape(axes[0].shape))
+             return [output[:, i].reshape(axes[0].shape)
+                     for i in range(output.shape[1])]
+
+         def _return_single_array(xy, origin):
++            if xy.size == 0 and (xy.ndim < 2 or xy.shape[-1] == 0):
++                xy = xy.reshape((0, self.naxis))
+             if xy.shape[-1] != self.naxis:
+                 raise ValueError(
+                     "When providing two arguments, the array must be "
+                     "of shape (N, {0})".format(self.naxis))
+             if ra_dec_order and sky == 'input':
+                 xy = self._denormalize_sky(xy)
+-            result = func(xy, origin)
++            if xy.size == 0:
++                result = np.zeros(xy.shape)
++            else:
++                result = func(xy, origin)
+             if ra_dec_order and sky == 'output':
+                 result = self._normalize_sky(result)
+             return result

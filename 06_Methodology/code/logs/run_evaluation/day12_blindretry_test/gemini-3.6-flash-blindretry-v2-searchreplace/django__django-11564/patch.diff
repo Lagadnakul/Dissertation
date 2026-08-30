@@ -1,0 +1,16 @@
+--- a/django/conf/__init__.py
++++ b/django/conf/__init__.py
+@@ -169,6 +169,13 @@
+             setattr(self, 'PASSWORD_RESET_TIMEOUT', self.PASSWORD_RESET_TIMEOUT_DAYS * 60 * 60 * 24)
+             warnings.warn(PASSWORD_RESET_TIMEOUT_DAYS_DEPRECATED_MSG, RemovedInDjango40Warning)
+ 
++        if getattr(self, 'FORCE_SCRIPT_NAME', None):
++            script_name = self.FORCE_SCRIPT_NAME.rstrip('/')
++            if self.STATIC_URL and self.STATIC_URL.startswith('/') and not self.STATIC_URL.startswith(script_name):
++                self.STATIC_URL = script_name + self.STATIC_URL
++            if self.MEDIA_URL and self.MEDIA_URL.startswith('/') and not self.MEDIA_URL.startswith(script_name):
++                self.MEDIA_URL = script_name + self.MEDIA_URL
++
+         if hasattr(time, 'tzset') and self.TIME_ZONE:
+             # When we can, attempt to validate the timezone. If we can't find
+             # this file, no check happens and it's harmless.

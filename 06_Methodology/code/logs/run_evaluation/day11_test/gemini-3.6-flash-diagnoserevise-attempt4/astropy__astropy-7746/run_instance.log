@@ -1,0 +1,33 @@
+2026-08-29 10:10:05,372 - INFO - Creating container for astropy__astropy-7746...
+2026-08-29 10:10:08,909 - INFO - Container for astropy__astropy-7746 created: cbdba0091df843cd047342ac2d3344a68bbcc3a9804ab0d1f3890c1e940dec51
+2026-08-29 10:10:15,815 - INFO - Container for astropy__astropy-7746 started: cbdba0091df843cd047342ac2d3344a68bbcc3a9804ab0d1f3890c1e940dec51
+2026-08-29 10:10:15,839 - INFO - Intermediate patch for astropy__astropy-7746 written to logs/run_evaluation/day11_test/gemini-3.6-flash-diagnoserevise-attempt4/astropy__astropy-7746/patch.diff, now applying to container...
+2026-08-29 10:10:18,063 - INFO - Failed to apply patch to container: git apply --verbose
+2026-08-29 10:10:37,439 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-08-29 10:10:38,871 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-08-29 10:10:40,126 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-08-29 10:10:40,509 - INFO - >>>>> Patch Apply Failed:
+patching file astropy/wcs/wcs.py
+Hunk #1 succeeded at 1626 (offset 926 lines).
+Hunk #2 FAILED at 1225.
+patch: **** malformed patch at line 44: @@ -1828,12 +1839,7 @@
+
+
+2026-08-29 10:10:40,516 - INFO - Traceback (most recent call last):
+  File "/home/chaitanya/research-venv/lib/python3.14/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for astropy__astropy-7746: >>>>> Patch Apply Failed:
+patching file astropy/wcs/wcs.py
+Hunk #1 succeeded at 1626 (offset 926 lines).
+Hunk #2 FAILED at 1225.
+patch: **** malformed patch at line 44: @@ -1828,12 +1839,7 @@
+
+
+Check (logs/run_evaluation/day11_test/gemini-3.6-flash-diagnoserevise-attempt4/astropy__astropy-7746/run_instance.log) for more information.
+
+2026-08-29 10:10:40,518 - INFO - Attempting to stop container sweb.eval.astropy__astropy-7746.day11_test...
+2026-08-29 10:10:57,685 - INFO - Container sweb.eval.astropy__astropy-7746.day11_test stopped successfully.
+2026-08-29 10:10:57,687 - INFO - Attempting to remove container sweb.eval.astropy__astropy-7746.day11_test...
+2026-08-29 10:10:57,971 - INFO - Container sweb.eval.astropy__astropy-7746.day11_test removed successfully.

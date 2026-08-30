@@ -1,0 +1,29 @@
+2026-08-29 05:18:57,186 - INFO - Creating container for django__django-11019...
+2026-08-29 05:18:57,476 - INFO - Container for django__django-11019 created: 3523c81fe6a064a14de28ce3e65829b88ef6735ccebed41de325f0a0ec8fb374
+2026-08-29 05:18:58,026 - INFO - Container for django__django-11019 started: 3523c81fe6a064a14de28ce3e65829b88ef6735ccebed41de325f0a0ec8fb374
+2026-08-29 05:18:58,036 - INFO - Intermediate patch for django__django-11019 written to logs/run_evaluation/day9_test/gemini-3.6-flash-blindretry-attempt2/django__django-11019/patch.diff, now applying to container...
+2026-08-29 05:18:58,325 - INFO - Failed to apply patch to container: git apply --verbose
+2026-08-29 05:19:01,771 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-08-29 05:19:02,352 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-08-29 05:19:02,717 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-08-29 05:19:02,829 - INFO - >>>>> Patch Apply Failed:
+patch: **** malformed patch at line 28:      def render(self):
+
+patching file django/forms/widgets.py
+
+2026-08-29 05:19:02,830 - INFO - Traceback (most recent call last):
+  File "/home/chaitanya/research-venv/lib/python3.14/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for django__django-11019: >>>>> Patch Apply Failed:
+patch: **** malformed patch at line 28:      def render(self):
+
+patching file django/forms/widgets.py
+
+Check (logs/run_evaluation/day9_test/gemini-3.6-flash-blindretry-attempt2/django__django-11019/run_instance.log) for more information.
+
+2026-08-29 05:19:02,831 - INFO - Attempting to stop container sweb.eval.django__django-11019.day9_test...
+2026-08-29 05:19:18,189 - INFO - Container sweb.eval.django__django-11019.day9_test stopped successfully.
+2026-08-29 05:19:18,190 - INFO - Attempting to remove container sweb.eval.django__django-11019.day9_test...
+2026-08-29 05:19:18,506 - INFO - Container sweb.eval.django__django-11019.day9_test removed successfully.

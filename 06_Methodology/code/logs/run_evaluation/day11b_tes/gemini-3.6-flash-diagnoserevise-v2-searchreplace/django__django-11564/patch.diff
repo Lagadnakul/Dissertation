@@ -1,0 +1,63 @@
+--- a/django/conf/__init__.py
++++ b/django/conf/__init__.py
+@@ -37,6 +37,19 @@
+ 
+     def __init__(self, value, setting_name):
+         self.setting_name = setting_name
++
++
++def _add_script_name_prefix(value):
++    """
++    If value is a relative path, prepend the SCRIPT_NAME prefix (settings.FORCE_SCRIPT_NAME).
++    """
++    if value is None:
++        return value
++    if value.startswith(('http://', 'https://', '//')):
++        return value
++    if not settings.FORCE_SCRIPT_NAME:
++        return value
++    return '%s/%s' % (settings.FORCE_SCRIPT_NAME.rstrip('/'), value.lstrip('/'))
+ 
+ 
+ class LazySettings(LazyObject):
+@@ -75,7 +88,8 @@
+         if self._wrapped is empty:
+             self._setup(name)
+         val = getattr(self._wrapped, name)
+-        self.__dict__[name] = val
++        if name not in ('MEDIA_URL', 'STATIC_URL'):
++            self.__dict__[name] = val
+         return val
+ 
+     def __setattr__(self, name, value):
+@@ -184,6 +198,12 @@
+     def is_overridden(self, setting):
+         return setting in self._explicit_settings
+ 
++    def __getattribute__(self, name):
++        val = super().__getattribute__(name)
++        if name in ('MEDIA_URL', 'STATIC_URL'):
++            return _add_script_name_prefix(val)
++        return val
++
+     def __repr__(self):
+         return '<%(cls)s "%(settings_module)s">' % {
+             'cls': self.__class__.__name__,
+@@ -208,7 +228,16 @@
+     def __getattr__(self, name):
+         if not name.isupper() or name in self._deleted:
+             raise AttributeError
+-        return getattr(self.default_settings, name)
++        val = getattr(self.default_settings, name)
++        if name in ('MEDIA_URL', 'STATIC_URL'):
++            return _add_script_name_prefix(val)
++        return val
++
++    def __getattribute__(self, name):
++        val = super().__getattribute__(name)
++        if name in ('MEDIA_URL', 'STATIC_URL'):
++            return _add_script_name_prefix(val)
++        return val
+ 
+     def __setattr__(self, name, value):
+         self._deleted.discard(name)

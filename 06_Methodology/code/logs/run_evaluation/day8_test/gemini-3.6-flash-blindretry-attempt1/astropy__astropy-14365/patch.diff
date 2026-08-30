@@ -1,0 +1,46 @@
+valid unified diff
+--- a/astropy/io/ascii/qdp.py
++++ b/astropy/io/ascii/qdp.py
+@@ -26,6 +26,8 @@
+     Examples
+     --------
+     >>> _line_type("READ SERR 3")
+     'command'
++    >>> _line_type("read serr 3")
++    'command'
+     >>> _line_type(" \n    !some gibberish")
+     'comment'
+@@ -58,7 +60,7 @@
+     _new_re = rf"NO({sep}NO)+"
+     _data_re = rf"({_decimal_re}|NO|[-+]?nan)({sep}({_decimal_re}|NO|[-+]?nan))*)"
+     _type_re = rf"^\s*((?P<command>{_command_re})|(?P<new>{_new_re})|(?P<data>{_data_re})?\s*(\!(?P<comment>.*))?\s*$"
+-    _line_type_re = re.compile(_type_re)
++    _line_type_re = re.compile(_type_re, re.IGNORECASE)
+     line = line.strip()
+     if not line:
+         return "comment"
+@@ -236,20 +238,21 @@
+         if datatype.startswith("data"):
+             # The first time I find data, I define err_specs
+             if err_specs == {} and command_lines != "":
+                 for cline in command_lines.strip().split("\n"):
+-                    command = cline.strip().split()
++                    cline = cline.split("!")[0].strip()
++                    command = cline.split()
+                     # This should never happen, but just in case.
+                     if len(command) < 3:
+                         continue
+                     err_specs[command[1].lower()] = [int(c) for c in command[2:]]
+             if colnames is None:
+                 colnames = _interpret_err_lines(err_specs, ncol, names=input_colnames)
+
+             if current_rows is None:
+                 current_rows = []
+
+             values = []
+             for v in line.split(delimiter):
+-                if v == "NO":
++                if v.upper() == "NO":
+                     values.append(np.ma.masked)
+                 else:
+                     # Understand if number is int or float

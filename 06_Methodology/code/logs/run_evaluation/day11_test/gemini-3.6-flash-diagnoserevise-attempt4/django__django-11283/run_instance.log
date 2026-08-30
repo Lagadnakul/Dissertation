@@ -1,0 +1,29 @@
+2026-08-29 10:10:58,191 - INFO - Creating container for django__django-11283...
+2026-08-29 10:10:58,622 - INFO - Container for django__django-11283 created: 192683636ab81f6c57c72b17cb61d66a3b217cb9f5440e3e0de6d8d068dc57e0
+2026-08-29 10:10:59,329 - INFO - Container for django__django-11283 started: 192683636ab81f6c57c72b17cb61d66a3b217cb9f5440e3e0de6d8d068dc57e0
+2026-08-29 10:10:59,334 - INFO - Intermediate patch for django__django-11283 written to logs/run_evaluation/day11_test/gemini-3.6-flash-diagnoserevise-attempt4/django__django-11283/patch.diff, now applying to container...
+2026-08-29 10:11:00,132 - INFO - Failed to apply patch to container: git apply --verbose
+2026-08-29 10:11:18,588 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-08-29 10:11:19,590 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-08-29 10:11:20,427 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-08-29 10:11:20,742 - INFO - >>>>> Patch Apply Failed:
+patching file django/contrib/auth/migrations/0011_update_proxy_permissions.py
+patch: **** malformed patch at line 34: def revert_proxy_model_permissions(apps, schema_editor):
+
+
+2026-08-29 10:11:20,744 - INFO - Traceback (most recent call last):
+  File "/home/chaitanya/research-venv/lib/python3.14/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for django__django-11283: >>>>> Patch Apply Failed:
+patching file django/contrib/auth/migrations/0011_update_proxy_permissions.py
+patch: **** malformed patch at line 34: def revert_proxy_model_permissions(apps, schema_editor):
+
+
+Check (logs/run_evaluation/day11_test/gemini-3.6-flash-diagnoserevise-attempt4/django__django-11283/run_instance.log) for more information.
+
+2026-08-29 10:11:20,762 - INFO - Attempting to stop container sweb.eval.django__django-11283.day11_test...
+2026-08-29 10:11:37,966 - INFO - Container sweb.eval.django__django-11283.day11_test stopped successfully.
+2026-08-29 10:11:37,969 - INFO - Attempting to remove container sweb.eval.django__django-11283.day11_test...
+2026-08-29 10:11:38,363 - INFO - Container sweb.eval.django__django-11283.day11_test removed successfully.

@@ -1,0 +1,25 @@
+2026-08-29 03:55:21,925 - INFO - Creating container for django__django-11620...
+2026-08-29 03:55:22,129 - INFO - Container for django__django-11620 created: f577b6361e29922ab7bb3f862701ec419300ccd739300d21b392b7843f6e88e7
+2026-08-29 03:55:22,464 - INFO - Container for django__django-11620 started: f577b6361e29922ab7bb3f862701ec419300ccd739300d21b392b7843f6e88e7
+2026-08-29 03:55:22,471 - INFO - Intermediate patch for django__django-11620 written to logs/run_evaluation/day8_test/gemini-3.6-flash-blindretry-attempt1/django__django-11620/patch.diff, now applying to container...
+2026-08-29 03:55:23,016 - INFO - Failed to apply patch to container: git apply --verbose
+2026-08-29 03:55:27,385 - INFO - Failed to apply patch to container: git apply --verbose --3way
+2026-08-29 03:55:27,890 - INFO - Failed to apply patch to container: git apply --verbose --reject
+2026-08-29 03:55:28,260 - INFO - Failed to apply patch to container: patch --batch --forward --fuzz=5 -p1 -i
+2026-08-29 03:55:28,373 - INFO - >>>>> Patch Apply Failed:
+patch: **** Only garbage was found in the patch input.
+
+2026-08-29 03:55:28,374 - INFO - Traceback (most recent call last):
+  File "/home/chaitanya/research-venv/lib/python3.14/site-packages/swebench/harness/run_evaluation.py", line 333, in run_instance
+    raise EvaluationError(
+    ...<3 lines>...
+    )
+swebench.harness.utils.EvaluationError: Error in evaluation for django__django-11620: >>>>> Patch Apply Failed:
+patch: **** Only garbage was found in the patch input.
+
+Check (logs/run_evaluation/day8_test/gemini-3.6-flash-blindretry-attempt1/django__django-11620/run_instance.log) for more information.
+
+2026-08-29 03:55:28,375 - INFO - Attempting to stop container sweb.eval.django__django-11620.day8_test...
+2026-08-29 03:55:43,794 - INFO - Container sweb.eval.django__django-11620.day8_test stopped successfully.
+2026-08-29 03:55:43,797 - INFO - Attempting to remove container sweb.eval.django__django-11620.day8_test...
+2026-08-29 03:55:44,123 - INFO - Container sweb.eval.django__django-11620.day8_test removed successfully.
