@@ -1,0 +1,65 @@
+--- a/django/conf/__init__.py
++++ b/django/conf/__init__.py
+@@ -37,6 +37,20 @@
+ 
+     def __init__(self, value, setting_name):
+         self.setting_name = setting_name
++
++
++def _add_script_name_prefix(settings_obj, value):
++    """
++    If value is a relative path, prepend the SCRIPT_NAME prefix (settings.FORCE_SCRIPT_NAME).
++    """
++    if value is None:
++        return value
++    if value.startswith(('http://', 'https://', '//')):
++        return value
++    script_name = getattr(settings_obj, 'FORCE_SCRIPT_NAME', None)
++    if not script_name:
++        return value
++    return '%s/%s' % (script_name.rstrip('/'), value.lstrip('/'))
+ 
+ 
+ class LazySettings(LazyObject):
+@@ -75,7 +89,8 @@
+         if self._wrapped is empty:
+             self._setup(name)
+         val = getattr(self._wrapped, name)
+-        self.__dict__[name] = val
++        if name not in ('MEDIA_URL', 'STATIC_URL'):
++            self.__dict__[name] = val
+         return val
+ 
+     def __setattr__(self, name, value):
+@@ -184,6 +199,12 @@
+     def is_overridden(self, setting):
+         return setting in self._explicit_settings
+ 
++    def __getattribute__(self, name):
++        val = super().__getattribute__(name)
++        if name in ('MEDIA_URL', 'STATIC_URL'):
++            return _add_script_name_prefix(self, val)
++        return val
++
+     def __repr__(self):
+         return '<%(cls)s "%(settings_module)s">' % {
+             'cls': self.__class__.__name__,
+@@ -208,7 +229,17 @@
+     def __getattr__(self, name):
+         if not name.isupper() or name in self._deleted:
+             raise AttributeError
+-        return getattr(self.default_settings, name)
++        val = getattr(self.default_settings, name)
++        if name in ('MEDIA_URL', 'STATIC_URL') and 'FORCE_SCRIPT_NAME' in self.__dict__:
++            raw_val = getattr(self.default_settings, '__dict__', {}).get(name, val)
++            return _add_script_name_prefix(self, raw_val)
++        return val
++
++    def __getattribute__(self, name):
++        val = super().__getattribute__(name)
++        if name in ('MEDIA_URL', 'STATIC_URL'):
++            return _add_script_name_prefix(self, val)
++        return val
+ 
+     def __setattr__(self, name, value):
+         self._deleted.discard(name)

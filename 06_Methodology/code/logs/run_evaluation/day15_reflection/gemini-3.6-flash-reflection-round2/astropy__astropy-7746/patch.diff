@@ -1,0 +1,46 @@
+--- a/astropy/wcs/wcs.py
++++ b/astropy/wcs/wcs.py
+@@ -1222,7 +1222,10 @@
+ 
+             if ra_dec_order and sky == 'input':
+                 xy = self._denormalize_sky(xy)
+-            output = func(xy, origin)
++            if xy.size == 0:
++                output = np.zeros(xy.shape)
++            else:
++                output = func(xy, origin)
+             if ra_dec_order and sky == 'output':
+                 output = self._normalize_sky(output)
+                 return (output[:, 0].reshape(axes[0].shape),
+@@ -1231,13 +1234,18 @@
+                     for i in range(output.shape[1])]
+ 
+         def _return_single_array(xy, origin):
++            if xy.size == 0 and (xy.ndim < 2 or xy.shape[-1] == 0):
++                xy = xy.reshape((0, self.naxis))
+             if xy.shape[-1] != self.naxis:
+                 raise ValueError(
+                     "When providing two arguments, the array must be "
+                     "of shape (N, {0})".format(self.naxis))
+             if ra_dec_order and sky == 'input':
+                 xy = self._denormalize_sky(xy)
+-            result = func(xy, origin)
++            if xy.size == 0:
++                result = np.zeros(xy.shape)
++            else:
++                result = func(xy, origin)
+             if ra_dec_order and sky == 'output':
+                 result = self._normalize_sky(result)
+             return result
+@@ -1630,9 +1638,9 @@
+         # (when any of the non-CD-matrix-based corrections are
+         # present). If not required return the initial
+         # approximation (pix0).
+-        if self.sip is None and \
++        if pix0.size == 0 or (self.sip is None and \
+            self.cpdis1 is None and self.cpdis2 is None and \
+-           self.det2im1 is None and self.det2im2 is None:
++           self.det2im1 is None and self.det2im2 is None):
+             # No non-WCS corrections detected so
+             # simply return initial approximation:
+             return pix0
