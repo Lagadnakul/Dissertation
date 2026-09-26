@@ -1,4 +1,23 @@
+# secrets — keys are referenced by NAME only (api_key_env in recovery-bench/configs/).
+# A key value must never reach this repository, which is public.
 .env
+.env.local
+.env.*.local
+
+# the original experiment's per-attempt scratch output (see recovery-bench/docs/DECISIONS.md, D0)
 attempts/
+
+# Python
 __pycache__/
 *.pyc
+.venv/
+
+# OS
+.DS_Store
+
+# A local working copy of this repository is sometimes kept alongside the project
+# as `Dissertation-main/`. It is this repository, so it is never committed into it.
+Dissertation-main/
+
+# recovery-bench/ carries its own .gitignore for node_modules, build output,
+# runtime artefacts and the archived provenance payload.
