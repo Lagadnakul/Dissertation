@@ -534,3 +534,92 @@ Two consequences, both now permanent:
 The result is committed to `data/legacy_patch_audit.json` — 28 KB, per-patch
 reasons plus era totals — because the archive payload is gitignored, so the
 derived figure must be committed or it is lost with it.
+
+---
+
+## D15 — Twenty-two evaluations left a patch and a log but no result
+
+**Decision.** Replay walks instance *directories* and treats a missing
+`report.json` as evidence, not as absence.
+
+The archive holds 95 evaluated instance directories, 73 `report.json` files and
+95 `patch.diff` files. The 22-file gap is not corruption. The SWE-bench harness
+raises before writing its report when `git apply` refuses the patch:
+
+```
+swebench.harness.utils.EvaluationError: Error in evaluation for
+django__django-11039: >>>>> Patch Apply Failed:
+patch: **** Only garbage was found in the patch input.
+```
+
+`reports/data/build_master_table.py` globs for `report.json`, so those 22 cells
+are invisible to every table it produces.
+
+**This is the defect ARCHITECTURE §2 was written against, found in the wild.** A
+failed cell left no record, which is exactly how "8 of 24 cells ceased to exist"
+in the original write-up. It is also why `Row<V>` carries its verification in the
+type: 9 of the 22 fall inside registered runs and are now first-class rows, and
+none of them can ever be counted into a resolve rate, because `resolveRate` does
+not accept `Row<"apply">`.
+
+The git messages are the D13/D14 defect classes seen from the other side —
+20 report `Only garbage was found in the patch input` (a diff with no usable file
+header) and the rest `malformed patch at line N` (declared hunk counts
+disagreeing with the body). Two independent measurements of the same mechanism.
+
+**Also recorded:** `build_master_table.py` drops unclassified runs with
+`if run in IGNORE or run not in RUNS: continue`, collapsing "deliberately
+excluded smoke test" with "run nobody classified". `day11_test`, `day4_test` and
+`day4_test2` are the second kind — 7 directories, none with a report. Replay
+reports them as `unregistered` rather than discarding them silently.
+
+---
+
+## D16 — The failure class is derived, and it matches
+
+**Decision.** `FAILURE_CLASS` is computed from outcomes and compared against the
+hand-written dict, rather than imported from it.
+
+`build_master_table.py` opens with *"Nothing in this script invents a number.
+Every cell is read from a report.json."* That holds for 38 of its 42 records. The
+other four are a literal:
+
+```python
+for t in ["astropy__astropy-14182", "django__django-11039",
+          "django__django-11583", "django__django-11620"]:
+    w(f"| {n} | `{t}` | **no** | ERROR (malformed patch) | n/a | n/a |")
+w("- Patch never applied (format-class failure): **4/20**")
+```
+
+and `FAILURE_CLASS` — the logic/format split the whole thesis turns on — is a dict
+somebody typed. It could not have been derived there: an apply failure produces
+no `report.json`, and the script reads nothing else. The evidence was sitting in
+`run_instance.log` the whole time (D15).
+
+**The result: the derived map equals the hand-written one exactly.** All 8 pool
+tasks, both classes, no missing and no unexpected entries. The derived failure
+pool matches `failure_pool.json`, which is a third independent copy. The
+submitted document is correct.
+
+What changes is its status. A constant that nothing could contradict is now a
+claim with a test attached — `tests/analysisClassify.test.ts`. If a future change
+breaks it, either the dissertation's central classification is wrong or the
+pipeline is, and the suite says so rather than quietly agreeing with itself.
+
+**The same applies to `master_table.md` as a whole.** A second, independent
+implementation regenerates it byte-for-byte (`tests/replayOracle.test.ts`). Every
+Chapter 5 figure dataset is likewise derived and pinned against the literals in
+`make_figures.py`, which types its numbers straight into draw.io shapes
+(`("Resolved&#xa;12", 12, ...)`).
+
+**The one thing not derived** is the 1x/2x/3x cost multiplier in figure 5.4. The
+archive holds no usage records — the original never captured them, which is why
+`Usage` is nullable on every replayed row. It is carried as a labelled input from
+`reports/data/config.md` rather than presented as something this pipeline
+measured. Step 4's budget ledger is what fixes that going forward.
+
+**Not done, deliberately:** the `.drawio` sources and their PNG exports are not
+regenerated. They are already embedded in `Self.docx`, which is final and cannot
+be re-exported, so rewriting them could only introduce drift between the
+repository and the submitted document. Making the numbers checkable was the
+missing part; making them re-renderable was not.

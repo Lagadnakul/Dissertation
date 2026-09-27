@@ -433,7 +433,7 @@ to a commit. That chain — not tidiness — is what "research-grade" means here
 | 0 | Archive originals; copy out the 73 `report.json`; export `swebench_lite.jsonl` | ✅ provenance safe, dataset frozen |
 | 1 | ✅ Workspaces, `core/types.ts`, zod config, `doctor` | `doctor` probes every endpoint, measures real TPS, checks key names, and **proves `git apply` accepts jsdiff output** — fails loudly before anything expensive |
 | 2 | `edits/` + tests | ✅ the core claim, pure functions — 138 tests; the format finding measured at 30/51 vs 10/10 (D14) |
-| 3 | `analysis/` + `replay` | **every Chapter 5 number and figure, offline, no key** |
+| 3 | ✅ `analysis/` + `replay` | **every Chapter 5 number and figure, offline, no key** — `master_table.md` regenerates byte-identically; 22 cells the original could not see recovered (D15); `FAILURE_CLASS` derived and matching (D16) |
 | 4 | `providers/` + budget ledger | first live call |
 | 5 | `strategies/` L0–L2.5 | reproduces Nakul's three conditions |
 | 6 | `matrix/` + `verify/` | full sweep, zero holes |
@@ -445,6 +445,14 @@ unified-diff output must be accepted by `git apply` — that format is what the
 entire thesis finding rests on, so it is proven against a known-good gold patch
 before any other code is written.
 
-**Step 3 remains the milestone that matters.** At that point the repository
-already does something the original cannot: regenerate the whole of Chapter 5
-with one command — no API key, no network, no Docker.
+**Step 3 is done, and it is the milestone that mattered.** The repository now
+does something the original cannot: regenerate the whole of Chapter 5 with one
+command — no API key, no network, no Docker.
+
+```sh
+bun run replay    # archive -> 51 cells -> data/replay_rows.json
+bun run report    # -> master_table.md (byte-identical) + data/chapter5_figures.json
+```
+
+It also reads 22 evaluations the original pipeline could not see at all, because
+a patch that never applied produces no `report.json` to glob for (D15).

@@ -476,8 +476,9 @@ future-work items as a real program. Full rationale in
 | 0 · archive provenance, freeze the task set | ✅ 495 files checksum-verified; 300 instances, revision-pinned |
 | 1 · workspaces, types, config schema, `doctor` | ✅ every gate passes offline |
 | 2 · `edits/` + tests | ✅ 138 tests |
-| 3 · `analysis/` + `replay` | next — regenerate all of Chapter 5 offline |
-| 4–8 · providers · strategies · sweep · dashboard · extensions | planned |
+| 3 · `analysis/` + `replay` | ✅ Chapter 5 regenerates byte-identically, offline |
+| 4 · providers + budget ledger | next — the first live call |
+| 5–8 · strategies · sweep · dashboard · extensions | planned |
 
 Three constraints, decided and fixed: **TypeScript on Bun** (D10), **no Docker
 anywhere** (D6), **conditions live in config, not scripts** (D9).
@@ -506,7 +507,24 @@ and because a viva question may reach them. **None of them change `Self.docx`.**
    reported an empty SEARCH as *ambiguous*; an unterminated block was
    indistinguishable from no blocks at all.
 
-4. **Two corrections to this plan's own evidence.** D0 claimed the code was never
+4. **Twenty-two evaluations were invisible to the original tables** (D15). The
+   archive holds 95 evaluated instance directories but only 73 `report.json`
+   files. The SWE-bench harness raises before writing its report when `git apply`
+   refuses the patch, and `build_master_table.py` globs for `report.json` — so
+   every cell whose patch never applied vanished from the analysis. This is the
+   "a failed cell leaves no record" defect, found in the project's own data.
+
+5. **The logic/format split is now derived rather than typed** (D16). In
+   `build_master_table.py` it is a hand-written dict, and the four format-class
+   rows of Table A are a literal — it could not derive them, because an apply
+   failure produces no report to read. Recomputing the split from outcomes gives
+   **exactly the hand-written answer**: all 8 pool tasks, both classes, no
+   discrepancy. The submitted numbers are correct; what is new is that something
+   now checks them. `master_table.md` regenerates byte-for-byte from an
+   independent implementation, and every Chapter 5 figure dataset is pinned
+   against the literals in `make_figures.py`.
+
+6. **Two corrections to this plan's own evidence.** D0 claimed the code was never
    version-controlled — wrong, the check ran against the enclosing home-directory
    repo; the code is at `Lagadnakul/Dissertation`. And SWE-bench Lite spans **12**
    repositories, not 11 — flask was missing, with 3 instances, which is exactly
@@ -516,6 +534,8 @@ and because a viva question may reach them. **None of them change `Self.docx`.**
 
 ## 12. Next action
 
-Step 3 — `analysis/` + `replay`: regenerate every Chapter 5 number and figure
-from committed logs, offline, with no API key. That is the point at which the
-repository does something the original cannot.
+Step 4 — `providers/` + the budget ledger: the first live model call, with a
+token ceiling that is enforced rather than documented, and usage captured per
+cell. The archive has no usage records at all — the original never wrote any —
+which is why figure 5.4's cost multipliers are the one Chapter 5 quantity step 3
+could not derive.

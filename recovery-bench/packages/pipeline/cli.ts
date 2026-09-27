@@ -11,17 +11,22 @@
  */
 
 import { doctor } from "./doctor.ts";
+import { replay, report } from "./analysis/replay.ts";
 
 const USAGE = `recovery-bench
 
   doctor [--config <path>] [--live]   run every precondition check
+  replay                               rebuild every cell from the archive
+  report [--stdout]                    regenerate master_table.md and figure data
   sweep                                (step 6) execute the grid
-  replay                               (step 3) rebuild Chapter 5 from the archive
-  report                               (step 3) write tables and figures
   serve                                (step 7) open the dashboard
 
   --config   default configs/base.yaml
   --live     permit network calls (doctor only)
+  --stdout   write the table to stdout instead of to disk (report only)
+
+\`replay\` and \`report\` need archive/legacy_runs/, which is gitignored. Their
+derived output is committed, so the results are readable without it.
 `;
 
 function flag(name: string): boolean {
@@ -40,9 +45,13 @@ switch (command) {
   case "doctor":
     process.exit(await doctor(configPath, flag("live")));
 
-  case "sweep":
   case "replay":
+    process.exit(await replay());
+
   case "report":
+    process.exit(await report(flag("stdout")));
+
+  case "sweep":
   case "serve":
     console.log(
       `\`${command}\` is not built yet. Build order (ARCHITECTURE §6):\n` +

@@ -4,6 +4,9 @@
 | --- | --- | --- |
 | `swebench_lite.jsonl` | ✅ yes | the frozen task set — 300 instances, one JSON object per line, sorted by `instance_id` |
 | `swebench_lite.meta.json` | ✅ yes | the upstream revision sha, row count, field list, per-repo counts, export timestamp |
+| `legacy_patch_audit.json` | ✅ yes | the 61 archived model patches, validated structurally — 30/51 vs 10/10 (D14) |
+| `replay_rows.json` | ✅ yes | all 51 archived cells, including the 22 that produce no `report.json` (D15) |
+| `chapter5_figures.json` | ✅ yes | the datasets behind figures 5.1–5.4, derived rather than typed (D16) |
 | `cache/` | ❌ no | fetched repo source files, keyed by `repo@commit:path` |
 | `runs/` | ❌ no | `<date>_<config>/` — one directory per sweep, the cell ledger and row output |
 
@@ -55,3 +58,28 @@ of the benchmark, and Nakul's original 20-task pilot drew only django and
 astropy. A uniform random 60 would still be django-dominated. The `≥3 per repo`
 floor in `configs/base.yaml` is set against the smallest repo here — flask, with
 3 — so every repo is representable without oversampling.
+
+
+## Why the derived files are committed
+
+`archive/legacy_runs/` and `archive/legacy_predictions/` are gitignored — every
+file in them already exists upstream at `Lagadnakul/Dissertation@c8872d0`, so the
+local copy is convenience rather than record. That makes anything computed from
+them **lost unless it is committed**.
+
+So the three derived files above are checked in, and the test suite reads them
+directly. On a machine with no archive the numbers are still verified; where the
+archive *is* present, the tests additionally re-derive everything and assert it
+still matches, which is what catches a regression silently changing a published
+figure.
+
+```sh
+bun run audit-legacy    # -> legacy_patch_audit.json
+bun run replay          # -> replay_rows.json
+bun run report          # -> chapter5_figures.json, and checks master_table.md
+```
+
+`bun run report` regenerates `reports/data/master_table.md` and compares it with
+the committed copy. It is the oracle for the whole analysis: an independent
+implementation reproducing the submitted tables byte-for-byte, or saying loudly
+that it cannot.
