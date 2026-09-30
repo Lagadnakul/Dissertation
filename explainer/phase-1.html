@@ -15,7 +15,7 @@
       <li><a href="phase-1.html" class="here"><span class="n">1</span> Foundations</a></li>
       <li><a href="phase-2.html"><span class="n">2</span> Edit layer</a></li>
       <li><a href="phase-3.html"><span class="n">3</span> Replay</a></li>
-      <li><span class="flat"><span class="n">4</span> Providers</span></li>
+      <li><a href="phase-4.html"><span class="n">4</span> Providers</a></li>
       <li><span class="flat"><span class="n">5</span> Strategies</span></li>
       <li><span class="flat"><span class="n">6</span> Sweep</span></li>
       <li><span class="flat"><span class="n">7</span> Dashboard</span></li>
@@ -34,13 +34,13 @@
     </p>
 
     <div class="status">
-      <div><span class="k">Outcomes defined</span><span class="v">8</span></div>
+      <div><span class="k">Outcomes defined</span><span class="v">9</span></div>
       <div><span class="k">Pre-flight gates</span><span class="v">6</span></div>
       <div><span class="k">Docker used</span><span class="v">None</span></div>
       <div><span class="k">State</span><span class="v"><span class="pill done">done</span></span></div>
     </div>
 
-    <h2>Every attempt must end in one of eight outcomes</h2>
+    <h2>Every attempt must end in one of nine outcomes</h2>
 
     <p>
       In the original code, an attempt whose patch was rejected printed
@@ -64,6 +64,7 @@
           <tr><td><code>CONTAMINATED</code></td><td>The patch was suspiciously close to the known answer</td></tr>
           <tr><td><code>PROVIDER_ERROR</code></td><td>The model service failed or refused</td></tr>
           <tr><td><code>BUDGET_STOP</code></td><td>The token ceiling was hit</td></tr>
+          <tr><td><code>TRUNCATED</code></td><td>Our own token limit cut the answer off mid-sentence — <a href="phase-4.html">added in phase 4</a>, after we measured it happening</td></tr>
         </tbody>
       </table>
     </div>

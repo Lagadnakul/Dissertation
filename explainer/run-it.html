@@ -15,7 +15,7 @@
       <li><a href="phase-1.html"><span class="n">1</span> Foundations</a></li>
       <li><a href="phase-2.html"><span class="n">2</span> Edit layer</a></li>
       <li><a href="phase-3.html"><span class="n">3</span> Replay</a></li>
-      <li><span class="flat"><span class="n">4</span> Providers</span></li>
+      <li><a href="phase-4.html"><span class="n">4</span> Providers</a></li>
       <li><span class="flat"><span class="n">5</span> Strategies</span></li>
       <li><span class="flat"><span class="n">6</span> Sweep</span></li>
       <li><span class="flat"><span class="n">7</span> Dashboard</span></li>
@@ -24,7 +24,7 @@
   </nav>
 
   <main>
-    <p class="eyebrow">Windows &middot; about 10 minutes</p>
+    <p class="eyebrow">Windows &middot; about 12 minutes</p>
     <h1>Check it yourself instead of taking my word for it</h1>
 
     <p class="standfirst">
@@ -36,7 +36,7 @@
     <div class="status">
       <div><span class="k">Cost</span><span class="v">Nothing</span></div>
       <div><span class="k">Internet</span><span class="v">Setup only</span></div>
-      <div><span class="k">Time</span><span class="v">~10 min</span></div>
+      <div><span class="k">Time</span><span class="v">~12 min</span></div>
       <div><span class="k">Risk to your files</span><span class="v">None</span></div>
     </div>
 
@@ -90,18 +90,18 @@ bun install</code></pre>
 
     <p>You should see, in roughly three seconds:</p>
 
-    <pre><code> 155 pass
-  36 skip
+    <pre><code> 214 pass
+  34 skip
    0 fail
-Ran 191 tests across 11 files.</code></pre>
+Ran 248 tests across 14 files.</code></pre>
 
     <div class="key">
-      <p class="lede">Those 36 skips are expected, and worth understanding.</p>
+      <p class="lede">Those 34 skips are expected, and worth understanding.</p>
       <p>
         They are the tests that need your original evaluation logs, which are
         deliberately <strong>not</strong> included in the download — they already exist
         in your repository, and duplicating 94 MB of them would be wasteful. Step 5
-        switches them on. The 155 that ran include the format-class finding, checked
+        switches them on. The 214 that ran include the format-class finding, checked
         against committed data.
       </p>
     </div>
@@ -186,11 +186,45 @@ cd recovery-bench</code></pre>
     </div>
 
     <p>
-      Run <code>bun test</code> again now and all <strong>191</strong> pass, with no
-      skips: the 36 that were waiting on your logs can finally run.
+      Run <code>bun test</code> again now and all <strong>248</strong> pass, with no
+      skips: the 34 that were waiting on your logs can finally run.
     </p>
 
-    <h2>Step 6 &middot; Prove the check can fail</h2>
+    <h2>Step 6 &middot; See the pre-flight check and the budget</h2>
+
+    <p>
+      This is the check that runs before any model is contacted. It needs no key
+      and no internet:
+    </p>
+
+    <pre><code>bun run doctor</code></pre>
+
+    <p>
+      It verifies the config parses, the 300-task benchmark is intact and pinned,
+      sampling is fixed, and — the unusual one — that <code>git</code> actually
+      accepts the patches the program generates. Then it prints the budget:
+    </p>
+
+    <pre><code>  PASS  budget ledger
+        no ledger at data/ledger.jsonl — nothing spent yet
+        nvidia      0/8,000,000 tokens (0.00%)  0/1500 calls
+        qwencloud   0/900,000 tokens (0.00%)  0/100 calls
+        gemini      0/500,000 tokens (0.00%)  0/30 calls</code></pre>
+
+    <p>
+      Those ceilings are now enforced before a request is sent, rather than
+      checked afterwards. In your original config the limit was written
+      <code>8_000_000</code>, which the config file format read as
+      <em>text</em> rather than a number — so nothing ever compared against it.
+      <a href="phase-4.html">Phase 4</a> explains what changed.
+    </p>
+
+    <p>
+      The endpoint probe will report <code>no key set</code>, which is correct:
+      the keys are deliberately not in the repository.
+    </p>
+
+    <h2>Step 7 &middot; Prove the check can fail</h2>
 
     <p>
       A test that always passes proves nothing. Break the analysis on purpose and
@@ -222,7 +256,8 @@ cd recovery-bench</code></pre>
           <tr><td><code>git : The term 'git' is not recognized</code></td><td>Install Git from git-scm.com/download/win, then reopen PowerShell.</td></tr>
           <tr><td><code>no archive at archive/legacy_runs/</code></td><td>Step 5's copy did not complete. Re-run that block from the <code>Dissertation</code> folder, not from <code>recovery-bench</code>.</td></tr>
           <tr><td><code>running scripts is disabled on this system</code></td><td>Run <code>Set-ExecutionPolicy -Scope CurrentUser RemoteSigned</code>, answer <code>Y</code>, then retry.</td></tr>
-          <tr><td>Tests fail after step 6</td><td>That is the point of step 6. Undo the edit and they pass again.</td></tr>
+          <tr><td>Tests fail after step 7</td><td>That is the point of step 7. Undo the edit and they pass again.</td></tr>
+          <tr><td><code>no key set</code> in step 6</td><td>Expected. API keys are not in the repository; every other check still runs.</td></tr>
         </tbody>
       </table>
     </div>

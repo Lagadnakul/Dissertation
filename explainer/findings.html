@@ -15,7 +15,7 @@
       <li><a href="phase-1.html"><span class="n">1</span> Foundations</a></li>
       <li><a href="phase-2.html"><span class="n">2</span> Edit layer</a></li>
       <li><a href="phase-3.html"><span class="n">3</span> Replay</a></li>
-      <li><span class="flat"><span class="n">4</span> Providers</span></li>
+      <li><a href="phase-4.html"><span class="n">4</span> Providers</a></li>
       <li><span class="flat"><span class="n">5</span> Strategies</span></li>
       <li><span class="flat"><span class="n">6</span> Sweep</span></li>
       <li><span class="flat"><span class="n">7</span> Dashboard</span></li>
@@ -249,6 +249,76 @@ failure class matches hardcoded  yes</code></pre>
         deleted, so the error stays visible.
       </li>
     </ul>
+
+    <h2>5 &middot; The reasoning setting was never actually sent</h2>
+
+    <p>
+      Every model in the configuration is marked <code>thinking: false</code>. When
+      phase 4 made the first real API call, it turned out that setting had
+      <strong>never been transmitted</strong> — the request simply did not mention
+      it, so the service applied its own default, which is thinking <em>on</em>.
+      This was true of your original runs too.
+    </p>
+
+    <p>
+      Measured on a one-word question, the cost difference is large, and one model
+      refuses to comply at all:
+    </p>
+
+    <div class="wrap-x">
+      <table>
+        <thead><tr><th>Model</th><th class="num">Default</th><th class="num">Thinking off</th><th>Effect</th></tr></thead>
+        <tbody>
+          <tr><td><code>nemotron_ultra</code></td><td class="num">38</td><td class="num">2</td><td>19&times; cheaper</td></tr>
+          <tr><td><code>nemotron_nano</code></td><td class="num">49</td><td class="num">3</td><td>16&times; cheaper</td></tr>
+          <tr><td><code>muse_30b</code></td><td class="num">84</td><td class="num">41</td><td><strong style="color:var(--format)">still thinking</strong></td></tr>
+          <tr><td><code>gemini_flash</code></td><td class="num">93</td><td class="num">0</td><td>obeys, different setting name</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <p>
+      <code>muse_30b</code> is the one that matters for the argument. A
+      Reflection-only condition is only meaningful if the arm it is compared
+      against is not reflecting — and on that model, asking for no thinking still
+      leaves it thinking. <a href="phase-4.html">Phase 4</a> makes the check report
+      this rather than pass over it.
+    </p>
+
+    <p>
+      This is the same shape of defect as the token ceiling written
+      <code>8_000_000</code>, which YAML read as text so that no comparison against
+      it ever did anything: a setting that existed, was believed to be in force, and
+      was never actually applied. Both now have tests that fail if they regress.
+    </p>
+
+    <h2>6 &middot; A “success” response that contained nothing</h2>
+
+    <p>
+      Probing four NVIDIA models at once returned, for two of them, an HTTP
+      <strong>200 success</strong> with an entirely empty body — while a request
+      beside them returned the honest form of the same condition,
+      <code>503 ResourceExhausted: Worker local total request limit reached</code>.
+      Run one at a time, both models answer in under half a second.
+    </p>
+
+    <p>
+      Worth knowing because of what it would have caused. An empty success reaching
+      the full experiment would have been recorded as <em>the model produced no
+      output</em> — a claim about model behaviour. It was a full queue at the
+      provider's end. The pipeline now names it as provider capacity and retries.
+    </p>
+
+    <div class="key">
+      <p class="lede">The pattern across findings 5 and 6.</p>
+      <p>
+        Neither is visible without spending a token. Both survived three phases of
+        careful offline work, and both would have quietly distorted a result rather
+        than announcing themselves. That is the argument for building the
+        instrument before trusting the measurement — which is, in the end, what your
+        Chapter 6 proposes.
+      </p>
+    </div>
 
     <h2>If you are asked a hard question</h2>
 
