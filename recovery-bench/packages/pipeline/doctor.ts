@@ -15,6 +15,8 @@
 import { loadConfig, keyStatus, type Config, type ProviderConfig } from "@rb/core";
 import { toPatch, toUnifiedDiff, patchTargets } from "./edits/toPatch.ts";
 import { checkApply, withScratchRepo, applyAndRead } from "./verify/apply.ts";
+import { GeminiProvider, OpenAICompatProvider } from "./providers/index.ts";
+import { BudgetLedger, LEDGER_PATH } from "./providers/budget.ts";
 
 type Status = "PASS" | "FAIL" | "SKIP" | "WARN";
 
@@ -279,6 +281,9 @@ interface Probe {
   tps: number | null;
   completionTokens: number | null;
   reasoningTokens: number | null;
+  /** False when the stream produced reasoning but never visible output. */
+  sawContent: boolean;
+  finishReason: string | null;
   error: string | null;
 }
 
@@ -291,13 +296,34 @@ interface Probe {
  * seconds to start with two samples disagreeing by 2×. Any budget or runtime
  * estimate built on the names would be wrong by an order of magnitude.
  */
+/**
+ * Measures each endpoint rather than trusting its name.
+ *
+ * This check exists because the model names lie. In the screenshots that set the
+ * model choice, "Flash" measured 13 tokens/s with a 24-second time-to-first-token
+ * while a 550B model managed 164 tokens/s at 1.65s, and "Lightning" took 65
+ * seconds to start with two samples disagreeing by 2x. Any budget or runtime
+ * estimate built on the names would be wrong by an order of magnitude.
+ *
+ * Rewritten in step 4 after live measurement showed this check was itself
+ * reporting three falsehoods (D17):
+ *
+ *   1. `muse_30b` and `nemotron_nano` were reported `ok` having produced no
+ *      visible content at all — the 16-token probe ceiling was consumed
+ *      entirely by undisclosed reasoning.
+ *   2. `nemotron_ultra` was reported at **94,094 tok/s**.
+ *   3. Gemini was never probed: `probe not implemented for kind gemini`.
+ *
+ * The probe now delegates to the provider layer, asks for enough tokens to
+ * reach content, and reports "no content" as a warning rather than a pass.
+ */
 async function probeModel(
   modelId: string,
   cfg: Config,
+  ledger: BudgetLedger | null = null,
 ): Promise<Probe> {
   const m = cfg.models[modelId]!;
   const p: ProviderConfig = cfg.providers[m.provider]!;
-  const keyName = p.apiKeyEnv.find((n) => (process.env[n] ?? "").length > 0);
 
   const base: Probe = {
     model: modelId,
@@ -306,90 +332,88 @@ async function probeModel(
     tps: null,
     completionTokens: null,
     reasoningTokens: null,
+    sawContent: false,
+    finishReason: null,
     error: null,
   };
 
-  if (!keyName) return { ...base, error: `no key set (${p.apiKeyEnv.join(", ")})` };
-  if (p.kind !== "openai_compat") {
-    return { ...base, error: `probe not implemented for kind ${p.kind}` };
-  }
+  const anyKey = p.apiKeyEnv.some((n) => (process.env[n] ?? "").length > 0);
+  if (!anyKey) return { ...base, error: `no key set (${p.apiKeyEnv.join(", ")})` };
 
-  const started = Bun.nanoseconds();
-  let firstToken: number | null = null;
+  const client =
+    p.kind === "gemini"
+      ? new GeminiProvider(m.provider, p)
+      : new OpenAICompatProvider(m.provider, p);
+
+  // 256, not 16. A reasoning model needs room to reach visible output; the old
+  // ceiling guaranteed a truncated answer and then called it a pass.
+  const PROBE_MAX_TOKENS = 256;
+
+  /**
+   * Long enough to measure, small enough to be free.
+   *
+   * "Reply with exactly: ok" costs 2-3 tokens once thinking is actually
+   * disabled (D19), and throughput cannot be measured from three tokens. This
+   * prompt produces a few dozen deterministic tokens instead, so TTFT and
+   * tokens/s are real measurements rather than artefacts of a tiny sample.
+   */
+  const PROBE_PROMPT =
+    "Count from 1 to 40. Output only the numbers, one per line, nothing else.";
 
   try {
-    const res = await fetch(`${p.baseUrl}/chat/completions`, {
-      method: "POST",
-      headers: {
-        "content-type": "application/json",
-        authorization: `Bearer ${process.env[keyName]}`,
-      },
-      body: JSON.stringify({
-        model: m.model,
-        messages: [
-          { role: "user", content: "Reply with exactly: ok" },
-        ],
-        temperature: m.temperature,
-        top_p: m.topP,
-        max_tokens: 16,
-        stream: true,
-        stream_options: { include_usage: true },
-      }),
-      signal: AbortSignal.timeout(p.timeoutS * 1000),
+    const r = await client.probe({
+      model: m.model,
+      prompt: PROBE_PROMPT,
+      temperature: m.temperature,
+      topP: m.topP,
+      maxTokens: PROBE_MAX_TOKENS,
+      // Probe with what the config declares, so a model that ignores the flag
+      // is caught here rather than discovered in the results (D19).
+      thinking: m.thinking,
     });
-
-    if (!res.ok) {
-      const body = (await res.text()).slice(0, 200);
-      return { ...base, error: `HTTP ${res.status} — ${body}` };
-    }
-
-    /** Providers disagree on where reasoning tokens live; read both shapes. */
-    type Usage = {
-      completion_tokens?: number;
-      reasoning_tokens?: number;
-      completion_tokens_details?: { reasoning_tokens?: number };
-    };
-    let usage: Usage | null = null;
-    const reader = res.body!.getReader();
-    const decoder = new TextDecoder();
-    let buffer = "";
-
-    while (true) {
-      const { done, value } = await reader.read();
-      if (done) break;
-      buffer += decoder.decode(value, { stream: true });
-      const parts = buffer.split("\n");
-      buffer = parts.pop() ?? "";
-      for (const line of parts) {
-        if (!line.startsWith("data: ")) continue;
-        const payload = line.slice(6).trim();
-        if (payload === "[DONE]") continue;
-        const chunk = JSON.parse(payload);
-        if (firstToken === null && chunk.choices?.[0]?.delta?.content) {
-          firstToken = Bun.nanoseconds();
-        }
-        if (chunk.usage) usage = chunk.usage;
+    // A live probe spends real tokens. Recording them is not bookkeeping
+    // pedantry: a ledger that omits its own diagnostics understates spend, and
+    // an understated ledger is the thing this project refuses to ship.
+    if (ledger !== null && r.completionTokens !== null) {
+      const usage = {
+        promptTokens: 0,
+        completionTokens: r.completionTokens,
+        reasoningTokens: r.reasoningTokens,
+        latencyMs: Math.round(r.totalMs),
+      };
+      try {
+        const reservation = ledger.reserve(m.provider, r.completionTokens);
+        await ledger.commit(
+          reservation,
+          {
+            provider: m.provider,
+            model: m.model,
+            cell: `doctor:probe:${modelId}`,
+            promptTokens: 0,
+            completionTokens: r.completionTokens,
+            reasoningTokens: r.reasoningTokens,
+            latencyMs: Math.round(r.totalMs),
+            status: 200,
+            retries: 0,
+            outcome: r.finishReason === "length" ? "truncated" : "ok",
+          },
+          usage,
+        );
+      } catch {
+        // A probe that cannot be charged is still a valid probe; the budget
+        // gate above has already reported the exhaustion.
       }
     }
-
-    const endedMs = (Bun.nanoseconds() - started) / 1e6;
-    const ttftMs = firstToken === null ? null : (firstToken - started) / 1e6;
-    const completion = usage?.completion_tokens ?? null;
-    const reasoning =
-      usage?.completion_tokens_details?.reasoning_tokens ??
-      usage?.reasoning_tokens ??
-      null;
 
     return {
       model: modelId,
       ok: true,
-      ttftMs,
-      tps:
-        completion !== null && ttftMs !== null && endedMs > ttftMs
-          ? completion / ((endedMs - ttftMs) / 1000)
-          : null,
-      completionTokens: completion,
-      reasoningTokens: reasoning,
+      ttftMs: r.ttftMs,
+      tps: r.tps,
+      completionTokens: r.completionTokens,
+      reasoningTokens: r.reasoningTokens,
+      sawContent: r.sawContent,
+      finishReason: r.finishReason,
       error: null,
     };
   } catch (e) {
@@ -397,7 +421,54 @@ async function probeModel(
   }
 }
 
-async function checkProviders(cfg: Config, live: boolean): Promise<void> {
+/**
+ * Reports the budget before it is spent, not after.
+ *
+ * The ceiling in the original config was the string `"8_000_000"`, so nothing
+ * ever compared against it (D3). Here the remaining headroom is read from the
+ * committed ledger and printed, and a provider already at its ceiling is a
+ * warning rather than a surprise 400 mid-sweep.
+ */
+async function checkBudget(cfg: Config): Promise<BudgetLedger> {
+  const { ledger, records, skipped } = await BudgetLedger.load(
+    cfg.budget.providers,
+    LEDGER_PATH,
+  );
+
+  const exhausted: string[] = [];
+  for (const [provider, ceiling] of Object.entries(cfg.budget.providers)) {
+    const spend = ledger.spendOf(provider);
+    if (spend.tokens >= ceiling.maxTokens || spend.calls >= ceiling.maxCalls) {
+      exhausted.push(provider);
+    }
+  }
+
+  const detail = [
+    records === 0
+      ? `no ledger at ${LEDGER_PATH} — nothing spent yet`
+      : `${records} call(s) in the ledger${skipped > 0 ? `, ${skipped} unreadable line(s)` : ""}`,
+    ...ledger.summary(),
+    `stop_on_exhaustion: ${cfg.budget.stopOnExhaustion}`,
+  ].join("\n");
+
+  record({
+    name: "budget ledger",
+    status: exhausted.length > 0 ? "WARN" : "PASS",
+    detail:
+      exhausted.length > 0
+        ? `${detail}\nAT CEILING: ${exhausted.join(", ")} — cells will record BUDGET_STOP`
+        : detail,
+    gate: false,
+  });
+
+  return ledger;
+}
+
+async function checkProviders(
+  cfg: Config,
+  live: boolean,
+  ledger: BudgetLedger | null,
+): Promise<void> {
   const modelIds = [
     ...new Set(
       Object.values(cfg.grid)
@@ -418,7 +489,26 @@ async function checkProviders(cfg: Config, live: boolean): Promise<void> {
     return;
   }
 
-  const probes = await Promise.all(modelIds.map((id) => probeModel(id, cfg)));
+  /**
+   * Sequential, deliberately (D20).
+   *
+   * `Promise.all` over four NVIDIA models made the endpoint return HTTP 200
+   * with an empty body for two of them, which this check then reported as
+   * models producing no output. A pre-flight gate that creates its own failures
+   * is worse than no gate. Latency here is irrelevant — correctness is not.
+   */
+  const probes: Probe[] = [];
+  for (const id of modelIds) {
+    let p = await probeModel(id, cfg, ledger);
+    // One retry after a pause. The empty-stream failure is a transient
+    // capacity limit, and back-to-back probing provokes it even in sequence.
+    if (!p.ok && /empty stream/.test(p.error ?? "")) {
+      await new Promise((r) => setTimeout(r, 3_000));
+      p = await probeModel(id, cfg, ledger);
+    }
+    probes.push(p);
+    await new Promise((r) => setTimeout(r, 1_000));
+  }
   const lines = probes.map((p) => {
     if (!p.ok) return `FAIL  ${p.model}  ${p.error}`;
     const ttft = p.ttftMs === null ? "  n/a" : `${(p.ttftMs / 1000).toFixed(2)}s`;
@@ -426,9 +516,18 @@ async function checkProviders(cfg: Config, live: boolean): Promise<void> {
     const think =
       p.reasoningTokens === null
         ? ""
-        : `  ⚠ billed ${p.reasoningTokens} reasoning tokens`;
-    return `ok    ${p.model.padEnd(22)} ttft ${ttft}  ${tps} tok/s${think}`;
+        : `  billed ${p.reasoningTokens} reasoning tokens`;
+    // A model that answered with nothing visible is not "ok". It was reported
+    // as ok before step 4, which is how two of five models passed this gate
+    // while producing no output (D17).
+    const tag = p.sawContent ? "ok   " : "WARN ";
+    const empty = p.sawContent
+      ? ""
+      : `  no visible content (finish_reason=${p.finishReason ?? "?"})`;
+    return `${tag} ${p.model.padEnd(22)} ttft ${ttft}  ${tps} tok/s${think}${empty}`;
   });
+
+  const silent = probes.filter((p) => p.ok && !p.sawContent);
 
   // D5: a model configured thinking:false that still bills reasoning tokens is a
   // validity threat, not a cost surprise — it silently breaks the comparison.
@@ -447,7 +546,12 @@ async function checkProviders(cfg: Config, live: boolean): Promise<void> {
   const failed = probes.filter((p) => !p.ok).length;
   record({
     name: "endpoint probe",
-    status: leaking.length > 0 ? "FAIL" : failed > 0 ? "WARN" : "PASS",
+    status:
+      leaking.length > 0
+        ? "FAIL"
+        : failed > 0 || silent.length > 0
+          ? "WARN"
+          : "PASS",
     detail: lines.join("\n"),
     gate: leaking.length > 0,
   });
@@ -504,7 +608,8 @@ export async function doctor(configPath: string, live: boolean): Promise<number>
   await gateDataset(cfg);
   checkSamplingPins(cfg);
   checkKeys(cfg);
-  await checkProviders(cfg, live);
+  const ledger = await checkBudget(cfg);
+  await checkProviders(cfg, live, live ? ledger : null);
 
   const failedGates = checks.filter((c) => c.gate && c.status === "FAIL");
   const warns = checks.filter((c) => c.status === "WARN").length;

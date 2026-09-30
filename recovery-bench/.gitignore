@@ -9,6 +9,11 @@ packages/dashboard/dist/
 # runtime artifacts — regenerable, never committed
 data/cache/
 data/runs/
+# Per-machine spend state, not a derived result. Committing it would make a
+# fresh clone appear to have already spent this machine's diagnostic tokens,
+# and every run would conflict. The derived outputs below ARE committed,
+# because they cannot be rebuilt without the gitignored archive.
+data/ledger.jsonl
 
 # Archived provenance payload. Every file in it already lives upstream at
 # Lagadnakul/Dissertation @ c8872d070fb0b098394796dfbc68bcf67c3bd957, so the copy

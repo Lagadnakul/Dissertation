@@ -83,3 +83,21 @@ bun run report          # -> chapter5_figures.json, and checks master_table.md
 the committed copy. It is the oracle for the whole analysis: an independent
 implementation reproducing the submitted tables byte-for-byte, or saying loudly
 that it cannot.
+
+## `ledger.jsonl` — not committed, deliberately
+
+Append-only, one JSON record per model call: provider, model, cell key, prompt /
+completion / reasoning tokens, latency, HTTP status, retries, outcome. Written
+by `packages/pipeline/providers/budget.ts`.
+
+It is **gitignored**, unlike the other derived files here. The rest cannot be
+rebuilt without the archive payload, so committing them is the only way to keep
+them. The ledger is the opposite: it is per-machine spend state. Committing it
+would make a fresh clone believe it had already spent this machine's diagnostic
+tokens, and every run would conflict with every other.
+
+It carries counts only — no key names, no key values, no prompt text, no
+completion text. `doctor` reads it to report remaining headroom, and
+`BudgetLedger.load()` replays it so a resumed run does not restart its budget at
+zero. A torn final line, the expected result of a crash mid-append, is skipped
+and counted rather than treated as fatal.

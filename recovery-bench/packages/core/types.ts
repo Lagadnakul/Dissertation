@@ -70,6 +70,7 @@ export const OUTCOME_KINDS = [
   "CONTAMINATED",
   "PROVIDER_ERROR",
   "BUDGET_STOP",
+  "TRUNCATED",
 ] as const;
 export type OutcomeKind = (typeof OUTCOME_KINDS)[number];
 
@@ -122,16 +123,57 @@ export type Outcome =
   | { kind: "APPLIED"; patch: string; filesChanged: string[] }
   | { kind: "CONTAMINATED"; patch: string; similarity: number; threshold: number }
   | { kind: "PROVIDER_ERROR"; status: number | null; reason: string; retries: number }
-  | { kind: "BUDGET_STOP"; tokensUsed: number; ceiling: number };
+  | { kind: "BUDGET_STOP"; tokensUsed: number; ceiling: number }
+  /**
+   * The token ceiling severed the response (D18).
+   *
+   * Measured, not hypothetical: at `max_tokens: 16`, `muse_30b` spent all
+   * sixteen on undisclosed reasoning and returned `content: null` with
+   * `finish_reason: "length"`. The model was working; the instrument was too
+   * small. Conflating that with `NO_OUTPUT` would blame the model for our
+   * setting.
+   */
+  | {
+      kind: "TRUNCATED";
+      finishReason: string;
+      completionTokens: number;
+      maxTokens: number;
+      /** Visible characters received before the cut, often zero. */
+      contentChars: number;
+    };
 
 /** True when the model produced a patch git accepted at `base_commit`. */
 export function isApplied(o: Outcome): boolean {
   return o.kind === "APPLIED" || o.kind === "CONTAMINATED";
 }
 
-/** Outcomes where the patch never reached the repository — "format-class". */
+/**
+ * Outcomes where the patch never reached the repository — "format-class".
+ *
+ * This predicate carries the thesis's central measurement, so what it
+ * *excludes* is as deliberate as what it includes.
+ *
+ * `TRUNCATED` is excluded (D18). A response our own token ceiling severed is an
+ * instrument limitation, not a model failing to produce applicable output.
+ * Counting it here would inflate the format-class rate with our configuration
+ * choices — the same category error as scoring a baseline over only the tasks
+ * that happened to produce a report. `BUDGET_STOP` and `PROVIDER_ERROR` are
+ * excluded for the same reason: nothing about the model was measured.
+ */
 export function isFormatClass(o: Outcome): boolean {
   return o.kind === "MALFORMED" || o.kind === "APPLY_FAIL" || o.kind === "NO_PATCH";
+}
+
+/**
+ * Outcomes that measured nothing about the model and must be reported
+ * separately rather than folded into either failure class.
+ *
+ * The archive already contains one of these: `astropy__astropy-14182` stopped
+ * for Gemini `RECITATION` and is excluded from the recovery denominator. D18
+ * generalises that precedent instead of leaving it a special case.
+ */
+export function isInstrumentLimit(o: Outcome): boolean {
+  return o.kind === "TRUNCATED" || o.kind === "BUDGET_STOP" || o.kind === "PROVIDER_ERROR";
 }
 
 // -------------------------------------------------------------- verification

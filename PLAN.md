@@ -468,7 +468,7 @@ text, and editing their content would make them no longer match what produced
 
 The document is done. Work moved to `recovery-bench/`, which builds the §8
 future-work items as a real program. Full rationale in
-`recovery-bench/docs/DECISIONS.md` (D0–D14); the build order is
+`recovery-bench/docs/DECISIONS.md` (D0–D20); the build order is
 `ARCHITECTURE.md` §6.
 
 | Step | State |
@@ -477,8 +477,9 @@ future-work items as a real program. Full rationale in
 | 1 · workspaces, types, config schema, `doctor` | ✅ every gate passes offline |
 | 2 · `edits/` + tests | ✅ 138 tests |
 | 3 · `analysis/` + `replay` | ✅ Chapter 5 regenerates byte-identically, offline |
-| 4 · providers + budget ledger | next — the first live call |
-| 5–8 · strategies · sweep · dashboard · extensions | planned |
+| 4 · providers + budget ledger | ✅ 248 tests; ceiling enforced before dispatch, all 5 keys live |
+| 5 · strategies | next — the recovery loop itself |
+| 6–8 · sweep · dashboard · extensions | planned |
 
 Three constraints, decided and fixed: **TypeScript on Bun** (D10), **no Docker
 anywhere** (D6), **conditions live in config, not scripts** (D9).
@@ -524,7 +525,28 @@ and because a viva question may reach them. **None of them change `Self.docx`.**
    independent implementation, and every Chapter 5 figure dataset is pinned
    against the literals in `make_figures.py`.
 
-6. **Two corrections to this plan's own evidence.** D0 claimed the code was never
+6. **Four defects found by making the first live call** (D17–D20). Building the
+   provider layer meant calling the endpoints, which invalidated the gate
+   written to measure them. `doctor --live` was reporting two models as `ok`
+   having produced no output at all, and `nemotron_ultra` at **94,094
+   tokens/second**; Gemini had never been probed. Separately, NVIDIA answers
+   HTTP **200 with an empty body** under concurrency rather than a 429 — which,
+   reaching a sweep, would have been recorded as the model producing nothing.
+   None of this is visible without spending a token, which is why it survived
+   three steps of offline work.
+
+7. **`thinking: false` was never sent on the wire** (D19). The config has
+   declared it since step 1; the request never mentioned it, so every call —
+   this project's and the original study's — ran with the vendor default,
+   thinking **on**. The control is `chat_template_kwargs.enable_thinking`.
+   Where honoured it cuts cost 16–19x (`nemotron_ultra`: 38 completion tokens
+   to answer "ok", versus 2). **`muse_30b` does not honour it** — reasoning
+   falls from 313 characters to 120 but never to zero, so an arm configured
+   `thinking: false` against that model is not a no-thinking arm. This is the
+   `8_000_000` string defect again, in a different field: declared, believed,
+   never transmitted.
+
+8. **Two corrections to this plan's own evidence.** D0 claimed the code was never
    version-controlled — wrong, the check ran against the enclosing home-directory
    repo; the code is at `Lagadnakul/Dissertation`. And SWE-bench Lite spans **12**
    repositories, not 11 — flask was missing, with 3 instances, which is exactly
@@ -534,8 +556,12 @@ and because a viva question may reach them. **None of them change `Self.docx`.**
 
 ## 12. Next action
 
-Step 4 — `providers/` + the budget ledger: the first live model call, with a
-token ceiling that is enforced rather than documented, and usage captured per
-cell. The archive has no usage records at all — the original never wrote any —
-which is why figure 5.4's cost multipliers are the one Chapter 5 quantity step 3
-could not derive.
+Step 5 — `strategies/`: the recovery loop itself. Baseline, Blind Retry,
+Reflection-only and Diagnose+Revise as four implementations of one interface,
+each driving `callCell` and terminating every cell in a recorded outcome. This
+is the first step whose output is comparable to Chapter 5's — and the first
+that can produce a *new* row rather than replay an old one.
+
+The prerequisites are now in place: the budget refuses to overspend before a
+request is sent (D3/step 4), `thinking` is actually transmitted (D19), and
+provider capacity failures are distinguishable from model silence (D20).

@@ -623,3 +623,154 @@ regenerated. They are already embedded in `Self.docx`, which is final and cannot
 be re-exported, so rewriting them could only introduce drift between the
 repository and the submitted document. Making the numbers checkable was the
 missing part; making them re-renderable was not.
+
+---
+
+## D17 — `doctor --live` was reporting three falsehoods
+
+Step 4's first act was to call the endpoints. That immediately invalidated the
+output of the gate written to measure them:
+
+```
+ok    muse_30b               ttft   n/a   n/a tok/s
+ok    nemotron_nano          ttft   n/a   n/a tok/s
+ok    nemotron_ultra         ttft 1.69s  94094.4 tok/s
+```
+
+Three separate defects, all in the direction of false confidence.
+
+**1. Two models were reported `ok` having produced no output at all.** The probe
+asked for `max_tokens: 16`, and these are reasoning models: all sixteen tokens
+went to undisclosed chain-of-thought, `content` came back `null`,
+`finish_reason` was `length`. TTFT latched only on `delta.content`, so it never
+fired — and the code read a null TTFT as "unmeasured" rather than "nothing was
+said". A gate that passes a model which answered nothing is worse than no gate.
+
+**2. `nemotron_ultra` was reported at 94,094 tokens per second.** Throughput was
+computed as `completion_tokens / (end - ttft)`. When the visible content arrives
+in one burst at the close of a long reasoning stream, that window collapses
+toward zero and the quotient explodes. The number was not a measurement of
+anything.
+
+**3. Gemini was never probed at all** — `probe not implemented for kind gemini`
+had been sitting in the output as a tolerated warning.
+
+Fixed by delegating to the new provider layer: TTFT latches on the first token
+of *any* kind, throughput is measured over the whole generation window, a model
+that produces no visible content reports `WARN` rather than `ok`, and Gemini has
+a real implementation.
+
+**Throughput is also reported as `null` when the sample cannot support it.**
+Once thinking is genuinely disabled (D19) a "reply with ok" probe costs two or
+three tokens, and dividing by a sub-millisecond window turned that into
+"3000.0 tok/s" — the same falsehood in a smaller costume. Below twelve
+completion tokens or a forty-millisecond window there is no measurement, and
+`null` says so. The probe now asks for forty lines of counting instead, which is
+long enough to measure and still free.
+
+**A caution that survives the fix:** consecutive probes of `muse_30b` measured
+**266.7** and **39.3** tok/s, a factor of 6.8. Single-sample throughput is not a
+basis for a runtime estimate, which is the same lesson the original model-choice
+screenshots taught and the reason this gate exists at all.
+
+---
+
+## D18 — `TRUNCATED` is a ninth outcome, and it is not format-class
+
+The measurement in D17 has no name in the eight-outcome taxonomy. A response
+severed by our own token ceiling is:
+
+- not `NO_OUTPUT` — the model was producing text when we cut it off
+- not `MALFORMED` — nothing about it was malformed
+- not `APPLY_FAIL` — no patch was ever offered to `git`
+
+So `TRUNCATED` is added, carrying `finishReason`, `completionTokens`,
+`maxTokens` and `contentChars`.
+
+**The consequential half is what it is excluded from.** `isFormatClass` carries
+the thesis's central measurement — the claim that patches fail because of edit
+format rather than reasoning. Counting a response *we* truncated as a
+format-class failure would inflate that number with our own configuration. It is
+precisely the category error of scoring a baseline over only the tasks that
+happened to produce a report file, which is the defect D15 found in the original
+analysis.
+
+`TRUNCATED`, `BUDGET_STOP` and `PROVIDER_ERROR` are therefore grouped by a new
+predicate, `isInstrumentLimit`: outcomes that measured nothing about the model
+and must be reported separately rather than folded into either failure class.
+The archive already contained one such case — `astropy__astropy-14182` stopped
+for Gemini `RECITATION` and is excluded from the recovery denominator — so this
+generalises an existing precedent instead of inventing a rule.
+
+**Found by mutation testing, not by design.** Adding `TRUNCATED` to
+`isFormatClass` broke **nothing** in a 237-test suite: the predicate that
+carries the headline number had no test of its own. `tests/outcomeClass.test.ts`
+now pins both sets exhaustively, asserts they are disjoint, and fails if a tenth
+outcome is added without being classified. The same mutation now kills three
+tests.
+
+---
+
+## D19 — `thinking: false` was never sent on the wire
+
+The config has declared `thinking: false` for every model since step 1. The
+request never mentioned it. So every call ever made by this project — and every
+call made by the original study — ran with the vendor default, which is thinking
+**on**.
+
+The control is `chat_template_kwargs: {"enable_thinking": <bool>}` for the
+OpenAI-compatible providers and `generationConfig.thinkingConfig.thinkingBudget`
+for Gemini. Measured, one key per model, on "Reply with exactly: ok":
+
+| model | no kwargs (what we sent) | `enable_thinking: false` | `enable_thinking: true` |
+| --- | --- | --- | --- |
+| `nemotron_ultra` | 153 reasoning chars · 38 tokens | **0 chars · 2 tokens** | 115 chars · 31 tokens |
+| `nemotron_nano` | 503 capacity error | **0 chars · 3 tokens** | 185 chars · 49 tokens |
+| `muse_30b` | 313 chars · 84 tokens | 120 chars · **41 tokens** | 313 chars · 84 tokens |
+| `gemini_flash` | 93 thought tokens | **0 thought tokens** | — |
+
+Three consequences.
+
+**The flag works, and it is worth 16–19x.** `nemotron_ultra` costs 38 completion
+tokens to say "ok" with the vendor default and 2 with thinking off.
+
+**`muse_30b` does not honour it.** Reasoning drops from 313 characters to 120
+but never reaches zero. That is a D5 validity threat with a name: an arm
+configured `thinking: false` against `muse_30b` is not actually a no-thinking
+arm, and a Reflection-only comparison drawn against it measures something else.
+`doctor` reports it rather than letting it pass.
+
+**This is the `8_000_000` defect again** (D3), in a different field: a setting
+that existed in configuration, was believed to be in force, and was never
+transmitted. Both are now regression-tested — `tests/providers.test.ts` asserts
+the flag appears in the request body, and removing it kills three tests.
+
+---
+
+## D20 — NVIDIA answers HTTP 200 with an empty body under concurrency
+
+Probing four NVIDIA models with `Promise.all` returned, for two of them, an
+HTTP **200** whose SSE stream contained zero deltas and no usage block. A
+sibling request in the same batch returned the honest version of the same
+condition:
+
+```
+503 ResourceExhausted: Worker local total request limit reached (16/16)
+```
+
+Run sequentially, the same two models answer in under half a second.
+
+This matters more than a flaky gate. A 200 with an empty body reaching the sweep
+would be recorded as the model producing nothing — `NO_OUTPUT`, attributed to
+the model, in a results table. A capacity limit on the provider's side would
+have been written down as a finding about model behaviour.
+
+Two fixes. The probe treats zero deltas *and* no usage as a `ProviderError`
+naming provider capacity, retryable, rather than as an empty answer. And
+`doctor` probes sequentially with a pause and one retry, because a pre-flight
+check that manufactures its own failures is worse than none — latency in a gate
+is irrelevant, correctness is not.
+
+**Both halves were needed.** Sequential probing alone still tripped the empty
+stream on back-to-back requests; the retry alone would have masked a real
+outage. Together the gate passes honestly, and when it fails it says why.

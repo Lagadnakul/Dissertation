@@ -434,7 +434,7 @@ to a commit. That chain — not tidiness — is what "research-grade" means here
 | 1 | ✅ Workspaces, `core/types.ts`, zod config, `doctor` | `doctor` probes every endpoint, measures real TPS, checks key names, and **proves `git apply` accepts jsdiff output** — fails loudly before anything expensive |
 | 2 | `edits/` + tests | ✅ the core claim, pure functions — 138 tests; the format finding measured at 30/51 vs 10/10 (D14) |
 | 3 | ✅ `analysis/` + `replay` | **every Chapter 5 number and figure, offline, no key** — `master_table.md` regenerates byte-identically; 22 cells the original could not see recovered (D15); `FAILURE_CLASS` derived and matching (D16) |
-| 4 | `providers/` + budget ledger | first live call |
+| 4 | ✅ `providers/` + budget ledger | ceiling **refuses before dispatch**, usage captured per cell, all 3 providers live — and four defects found by making the first call (D17–D20), including `thinking: false` never being sent on the wire (D19) |
 | 5 | `strategies/` L0–L2.5 | reproduces Nakul's three conditions |
 | 6 | `matrix/` + `verify/` | full sweep, zero holes |
 | 7 | `dashboard/` | the visual |
