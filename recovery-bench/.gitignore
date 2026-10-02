@@ -35,3 +35,4 @@ archive/legacy_code/
 
 # OS
 .DS_Store
+.vercel
